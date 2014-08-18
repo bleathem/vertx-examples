@@ -16,7 +16,7 @@
 
 
 // For now uses ext route matcher
-import io.vertx.ext.routematcher.RouteMatcher
+import io.vertx.groovy.ext.routematcher.RouteMatcher
 
 // Inspired from Sinatra / Express
 def rm = RouteMatcher.newRouteMatcher()
@@ -24,7 +24,7 @@ def rm = RouteMatcher.newRouteMatcher()
 // Extract the params from the uri
 rm.get('/details/:user/:id') { req ->
   // And just spit them out in the response
-  req.response().setChunked(true).writeString("User: ${req.params['user']} ID: ${req.params['id']}").end()
+  req.response().setChunked(true).writeString("User: ${req.params()['user']} ID: ${req.params()['id']}").end()
 }
 
 // Catch all - serve the index page
@@ -32,4 +32,4 @@ rm.getWithRegEx('.*') { req ->
   req.response().sendFile "route_match/index.html"
 }
 
-vertx.createHttpServer(port:8080).requestHandler({ rm.accept(it.delegate) }).listen()
+vertx.createHttpServer(port:8080).requestHandler({ rm.accept(it) }).listen()

@@ -23,8 +23,8 @@ server.requestHandler { req ->
 }
 
 // At the moment we use the native SockJSServer
-def sockJSServer = io.vertx.ext.sockjs.SockJSServer.sockJSServer(vertx.delegate, server.delegate)
+def sockJSServer = io.vertx.groovy.ext.sockjs.SockJSServer.sockJSServer(vertx, server)
 sockJSServer.bridge(
-    io.vertx.ext.sockjs.SockJSServerOptions.options().setPrefix("/eventbus"),
-    io.vertx.ext.sockjs.BridgeOptions.options().addInboundPermitted(new io.vertx.core.json.JsonObject()).addOutboundPermitted(new io.vertx.core.json.JsonObject()))
+    [prefix: "/eventbus"],
+    [inboundPermitted: [[:]], outboundPermitted: [[:]]])
 server.listen()

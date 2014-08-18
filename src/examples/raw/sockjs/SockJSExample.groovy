@@ -21,11 +21,10 @@ server.requestHandler { req ->
   if (req.uri() == "/") req.response().sendFile 'sockjs/index.html'
 }
 
-// At the moment we use the native SockJSServer
-def sockJSServer = io.vertx.ext.sockjs.SockJSServer.sockJSServer(vertx.delegate, server.delegate)
+def sockJSServer = io.vertx.groovy.ext.sockjs.SockJSServer.sockJSServer(vertx, server)
 
 // The handler for the SockJS app - we just echo data back
-sockJSServer.installApp(io.vertx.ext.sockjs.SockJSServerOptions.options().setPrefix("/testapp")) { sock ->
+sockJSServer.installApp([prefix: "/testapp"]) { sock ->
   sock.dataHandler { buff ->
     sock.writeBuffer(buff)
   }
