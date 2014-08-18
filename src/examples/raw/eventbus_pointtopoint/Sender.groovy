@@ -20,6 +20,6 @@ def eb = vertx.eventBus()
 
 vertx.setPeriodic(1000) {
   eb.send("ping-address", "ping!", { reply ->
-    println "Received reply ${reply.body()}"
+    println "Received reply ${reply.result().body()}"
   })
 }

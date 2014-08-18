@@ -17,7 +17,6 @@
 package io.vertx.examples;
 
 import io.vertx.core.AsyncResult;
-import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -200,7 +199,7 @@ public class Runner {
   private static void deploy(List<String> verticles, String[] previousDepl, Handler<AsyncResult<String[]>> resultHandler) {
     if (verticles.size() > 0) {
       String verticle = verticles.get(0);
-      vertx.deployVerticle(verticle, DeploymentOptions.options(), result -> {
+      vertx.deployVerticle(verticle, result -> {
         if (result.succeeded()) {
           System.out.println("Deployed: " + verticle + " as " + result.result());
           String[] nextDepl = Arrays.copyOf(previousDepl, previousDepl.length + 1);
