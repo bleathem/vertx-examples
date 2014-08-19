@@ -17,6 +17,6 @@ client.connect(1234, "localhost", function(sock, err) {
             sock.writeString(str);
         }
     } else {
-        "Failed to connect " + err
+        console.log("Failed to connect " + err)
     }
 });
