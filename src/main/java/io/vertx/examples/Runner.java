@@ -38,6 +38,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class Runner {
 
+  private static final String LANG = System.getProperty("lang", "groovy");
   private static Vertx vertx = Vertx.vertx();
   private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -52,8 +53,8 @@ public class Runner {
     examples.sort((m1, m2) -> m1.getName().compareTo(m2.getName()));
     System.out.println(
         "##########################\n" +
-        "# Vert.x examples runner #\n" +
-        "##########################\n");
+            "# Vert.x examples runner #\n" +
+            "##########################\n");
     while (true) {
       Method example;
       if (args.length > 0 && args[0] != null) {
@@ -94,71 +95,79 @@ public class Runner {
   }
 
   public static void echo() {
-    deploy("groovy:echo/EchoServer.groovy", "groovy:echo/EchoClient.groovy");
+    deployInLang("echo/EchoServer", "echo/EchoClient");
   }
 
   public static void eventbus_pointtopoint() {
-    deploy("groovy:eventbus_pointtopoint/Receiver.groovy", "groovy:eventbus_pointtopoint/Sender.groovy");
+    deployInLang("eventbus_pointtopoint/Receiver", "eventbus_pointtopoint/Sender");
   }
 
   public static void eventbus_pubsub() {
-    deploy("groovy:eventbus_pubsub/Receiver.groovy", "groovy:eventbus_pubsub/Sender.groovy");
+    deployInLang("eventbus_pubsub/Receiver", "eventbus_pubsub/Sender");
   }
 
   public static void eventbusbridge() {
-    deploy("groovy:eventbusbridge/BridgeServer.groovy");
+    deployInLang("eventbusbridge/BridgeServer");
   }
 
   public static void fanout() {
-    deploy("groovy:fanout/FanoutServer.groovy");
+    deployInLang("fanout/FanoutServer");
   }
 
   public static void http() {
-    deploy("groovy:http/Server.groovy", "groovy:http/Client.groovy");
+    deployInLang("http/Server", "http/Client");
   }
 
   public static void https() {
-    deploy("groovy:https/Server.groovy", "groovy:https/Client.groovy");
+    deployInLang("https/Server", "https/Client");
   }
 
   public static void proxy() {
-    deploy("groovy:proxy/Server.groovy", "groovy:proxy/Proxy.groovy", "groovy:proxy/Client.groovy");
+    deployInLang("proxy/Server", "proxy/Proxy", "proxy/Client");
   }
 
   public static void route_matcher() {
-    deploy("groovy:route_match/RouteMatchServer.groovy");
+    deployInLang("route_match/RouteMatchServer");
   }
 
   public static void sendfile() {
-    deploy("groovy:sendfile/SendFile.groovy");
+    deployInLang("sendfile/SendFile");
   }
 
   public static void simpleform() {
-    deploy("groovy:simpleform/SimpleFormServer.groovy");
+    deployInLang("simpleform/SimpleFormServer");
   }
 
   public static void simpleformupload() {
-    deploy("groovy:simpleformupload/SimpleFormUploadServer.groovy");
+    deployInLang("simpleformupload/SimpleFormUploadServer");
   }
 
   public static void sockjs() {
-    deploy("groovy:sockjs/SockJSExample.groovy");
+    deployInLang("sockjs/SockJSExample");
   }
 
   public static void ssl() {
-    deploy("groovy:ssl/Server.groovy", "groovy:ssl/Client.groovy");
+    deployInLang("ssl/Server", "ssl/Client");
   }
 
   public static void upload() {
-    deploy("groovy:upload/Server.groovy", "groovy:upload/Client.groovy");
+    deployInLang("upload/Server", "upload/Client");
   }
 
   public static void websockets() {
-    deploy("groovy:websockets/WebSocketsServer.groovy", "groovy:websockets/WebSocketsClient.groovy");
+    deployInLang("websockets/WebSocketsServer", "websockets/WebSocketsClient");
+  }
+
+  private static void deployInLang(String... verticles) {
+    verticles = verticles.clone();
+    for (int i = 0;i < verticles.length;i++) {
+      verticles[i] = LANG + ':' + verticles[i] + '.' + LANG;
+    }
+    deploy(verticles);
   }
 
   public static void deploy(String... verticles) {
-    BlockingQueue<AsyncResult<String[]>> queue = new ArrayBlockingQueue<AsyncResult<String[]>>(1);
+    BlockingQueue<AsyncResult<String[]>> queue = new ArrayBlockingQueue<>(1);
     deploy(Arrays.asList(verticles), new String[0], queue::add);
     AsyncResult<String[]> result;
     try {

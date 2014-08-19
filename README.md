@@ -38,3 +38,23 @@ Press a key after run...
 Got response 200
 Got data <html><body><h1>Hello from vert.x!</h1></body></html>
 ~~~~
+
+## Supported languages
+
+### Groovy
+
+~~~~
+mvn test -Pexample
+~~~~
+
+or
+
+~~~~
+mvn test -Pexample -Dlang=groovy
+~~~~
+
+### JavaScript (partial)
+
+~~~~
+mvn test -Pexample -Dlang=js
+~~~~
