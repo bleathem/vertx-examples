@@ -1,0 +1,105 @@
+package io.vertx.examples;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonElement;
+import io.vertx.core.json.JsonObject;
+import jdk.nashorn.internal.runtime.ScriptObject;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
+ */
+public abstract class ConversionTestBase {
+
+  public static Lang[] langs() { return new Lang[] { new JavaScriptLang(), new GroovyLang() }; }
+
+  public String runJavaScript(String path) {
+    return run(new JavaScriptLang(), path);
+  }
+
+  public String runGroovy(String path) {
+    return run(new GroovyLang(), path);
+  }
+
+  public void runAll(String path, Runnable after) {
+    for (Lang lang : langs()) {
+      run(lang, path);
+      after.run();
+    }
+  }
+
+  public String run(Lang lang, String path) {
+    Map<String, String> results;
+    try {
+      results = ConvertingProcessor.convert(ClassExpressionTest.class.getClassLoader(), lang, path + ".java");
+    } catch (Exception e) {
+      throw new AssertionError(e);
+    }
+    Vertx vertx = Vertx.vertx();
+    ArrayBlockingQueue<AsyncResult<String>> latch = new ArrayBlockingQueue<>(1);
+    ClassLoader prev = Thread.currentThread().getContextClassLoader();
+    Thread.currentThread().setContextClassLoader(new LoadingClassLoader(Thread.currentThread().getContextClassLoader(), results));
+    try {
+      vertx.deployVerticle(lang.getExtension() + ":" + path + "." + lang.getExtension(), latch::add);
+      AsyncResult<String> result;
+      try {
+        result = latch.poll(10, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        throw new AssertionError(e);
+      }
+      if (result.failed()) {
+        throw new AssertionError(result.cause());
+      }
+    } finally {
+      Thread.currentThread().setContextClassLoader(prev);
+    }
+    return results.get(path + "." + lang.getExtension());
+  }
+
+  private JsonElement unwrapJsonElement(ScriptObject obj) {
+    if (obj.isArray()) {
+      return unwrapJsonArray(obj);
+    } else {
+      return unwrapJsonObject(obj);
+    }
+  }
+
+  public JsonObject unwrapJsonObject(ScriptObject obj) {
+    JsonObject unwrapped = new JsonObject();
+    for (String key : obj.getOwnKeys(true)) {
+      Object value = obj.get(key);
+      if (value instanceof ScriptObject) {
+        value = unwrapJsonElement((ScriptObject) value);
+      }
+      unwrapped.putValue(key, value);
+    }
+    return unwrapped;
+  }
+
+  public JsonArray unwrapJsonArray(ScriptObject obj) {
+    JsonArray unwrapped = new JsonArray();
+    long len = (long) obj.getLength();
+    for (int i = 0;i < len;i++) {
+      Object value = obj.get(i);
+      if (value instanceof ScriptObject) {
+        value = unwrapJsonElement((ScriptObject) value);
+      }
+      unwrapped.add(value);
+    }
+    return unwrapped;
+  }
+
+  public JsonObject unwrapJsonObject(Map<String, Object> obj) {
+    return new JsonObject(obj);
+  }
+
+  public JsonArray unwrapJsonArray(List<Object> obj) {
+    return new JsonArray(obj);
+  }
+}
