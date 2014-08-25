@@ -69,33 +69,34 @@ public class GroovyLang implements Lang {
 
   @Override
   public ExpressionBuilder combine(ExpressionBuilder left, String op, ExpressionBuilder right) {
-    if (left instanceof GStringLiteralBuilder) {
-      GStringLiteralBuilder gleft = (GStringLiteralBuilder) left;
-      if (right instanceof GStringLiteralBuilder) {
+    if (op.equals("+")) {
+      if (left instanceof GStringLiteralBuilder) {
+        GStringLiteralBuilder gleft = (GStringLiteralBuilder) left;
+        if (right instanceof GStringLiteralBuilder) {
+          GStringLiteralBuilder gright = (GStringLiteralBuilder) right;
+          return gstring(renderer -> {
+            gleft.renderCharacters(renderer);
+            gright.renderCharacters(renderer);
+          });
+        } else {
+          return gstring(renderer -> {
+            gleft.renderCharacters(renderer);
+            renderer.append("${");
+            right.render(renderer);
+            renderer.append("}");
+          });
+        }
+      } else if (right instanceof GStringLiteralBuilder) {
         GStringLiteralBuilder gright = (GStringLiteralBuilder) right;
         return gstring(renderer -> {
-          gleft.renderCharacters(renderer);
+          renderer.append("${");
+          left.render(renderer);
+          renderer.append("}");
           gright.renderCharacters(renderer);
         });
-      } else {
-        return gstring(renderer -> {
-          gleft.renderCharacters(renderer);
-          renderer.append("${");
-          right.render(renderer);
-          renderer.append("}");
-        });
       }
-    } else if (right instanceof GStringLiteralBuilder) {
-      GStringLiteralBuilder gright = (GStringLiteralBuilder) right;
-      return gstring(renderer -> {
-        renderer.append("${");
-        left.render(renderer);
-        renderer.append("}");
-        gright.renderCharacters(renderer);
-      });
-    } else {
-      return Lang.super.combine(left, op, right);
     }
+    return Lang.super.combine(left, op, right);
   }
 
   @Override
