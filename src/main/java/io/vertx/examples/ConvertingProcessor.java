@@ -156,11 +156,11 @@ public class ConvertingProcessor extends AbstractProcessor {
               TreePathScanner<CodeBuilder, VisitContext> visitor = new TreePathScanner<CodeBuilder, VisitContext>() {
 
                 public StatementBuilder scan(StatementTree tree, VisitContext visitContext) {
-                  return (StatementBuilder) super.scan(tree, visitContext);
+                  return (StatementBuilder) scan((Tree) tree, visitContext);
                 }
 
                 public ExpressionBuilder scan(ExpressionTree tree, VisitContext visitContext) {
-                  return (ExpressionBuilder) super.scan(tree, visitContext);
+                  return (ExpressionBuilder) scan((Tree) tree, visitContext);
                 }
 
                 @Override
@@ -384,7 +384,7 @@ public class ConvertingProcessor extends AbstractProcessor {
 
                 @Override
                 public CodeBuilder visitMethod(MethodTree node, VisitContext p) {
-                  return visitBlock(node.getBody(), p);
+                  return scan(node.getBody(), p);
                 }
               };
               CodeBuilder src = visitor.scan(path, new VisitContext());
