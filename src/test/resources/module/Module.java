@@ -11,6 +11,7 @@ public class Module extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    ModuleTest.buffer = Buffer.buffer("the_buffer").toString("UTF-8");
+    ModuleTest.buffer = Buffer.buffer("the_buffer");
+    ModuleTest.toString = Buffer.buffer("the_buffer").toString("UTF-8");
   }
 }

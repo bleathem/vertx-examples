@@ -29,7 +29,7 @@ public class GroovyLang implements Lang {
       GroovyRenderer langRenderer = new GroovyRenderer(this);
       Lang.super.renderBlock(statements, langRenderer);
       for (TypeInfo.Class importedType : langRenderer.imports) {
-        renderer.append("import ").append(importedType.getName()).append('\n');
+        renderer.append("import ").append(importedType.getName().replace("io.vertx.", "io.vertx.groovy.")).append('\n');
       }
       renderer.append(langRenderer.getBuffer());
     }

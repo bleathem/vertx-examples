@@ -9,11 +9,19 @@ import org.junit.Test;
 public class ModuleTest extends ConversionTestBase {
 
   public static Object buffer;
+  public static Object toString;
 
   @Test
-  public void testModule() throws Exception {
-    runAll("module/Module", () -> {
-      Assert.assertEquals("the_buffer", buffer);
-    });
+  public void testJavaScriptModule() throws Throwable {
+    runJavaScript("module/Module");
+    Assert.assertNotNull(buffer);
+    Assert.assertEquals("the_buffer", toString);
+  }
+
+  @Test
+  public void testGroovytModule() throws Throwable {
+    runGroovy("module/Module");
+    Assert.assertTrue("Was expecting buffer " + buffer.getClass().getName() + "  instance of " + io.vertx.groovy.core.buffer.Buffer.class.getName(), buffer instanceof io.vertx.groovy.core.buffer.Buffer);
+    Assert.assertEquals("the_buffer", toString);
   }
 }
