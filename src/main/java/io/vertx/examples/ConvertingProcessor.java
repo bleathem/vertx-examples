@@ -6,6 +6,7 @@ import com.sun.source.tree.BlockTree;
 import com.sun.source.tree.ConditionalExpressionTree;
 import com.sun.source.tree.EnhancedForLoopTree;
 import com.sun.source.tree.ExpressionStatementTree;
+import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.ForLoopTree;
 import com.sun.source.tree.IdentifierTree;
 import com.sun.source.tree.IfTree;
@@ -16,6 +17,8 @@ import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.NewClassTree;
 import com.sun.source.tree.ParenthesizedTree;
+import com.sun.source.tree.StatementTree;
+import com.sun.source.tree.Tree;
 import com.sun.source.tree.UnaryTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreePath;
@@ -152,6 +155,14 @@ public class ConvertingProcessor extends AbstractProcessor {
               TreePath path = trees.getPath(exeElt);
               TreePathScanner<CodeBuilder, VisitContext> visitor = new TreePathScanner<CodeBuilder, VisitContext>() {
 
+                public StatementBuilder scan(StatementTree tree, VisitContext visitContext) {
+                  return (StatementBuilder) super.scan(tree, visitContext);
+                }
+
+                public ExpressionBuilder scan(ExpressionTree tree, VisitContext visitContext) {
+                  return (ExpressionBuilder) super.scan(tree, visitContext);
+                }
+
                 @Override
                 public CodeBuilder visitForLoop(ForLoopTree node, VisitContext p) {
                   if (node.getInitializer().size() != 1) {
@@ -160,24 +171,24 @@ public class ConvertingProcessor extends AbstractProcessor {
                   if (node.getUpdate().size() != 1) {
                     throw new UnsupportedOperationException();
                   }
-                  StatementBuilder initializer = (StatementBuilder) node.getInitializer().get(0).accept(this, p);
-                  ExpressionBuilder update = (ExpressionBuilder) node.getUpdate().get(0).getExpression().accept(this, p);
-                  StatementBuilder body = (StatementBuilder) node.getStatement().accept(this, p);
-                  ExpressionBuilder condition = (ExpressionBuilder) node.getCondition().accept(this, p);
+                  StatementBuilder initializer = scan(node.getInitializer().get(0), p);
+                  ExpressionBuilder update = scan(node.getUpdate().get(0).getExpression(), p);
+                  StatementBuilder body = scan(node.getStatement(), p);
+                  ExpressionBuilder condition = scan(node.getCondition(), p);
                   return lang.forLoop(initializer, condition, update, body);
                 }
 
                 @Override
                 public CodeBuilder visitEnhancedForLoop(EnhancedForLoopTree node, VisitContext p) {
-                  ExpressionBuilder expression = (ExpressionBuilder) node.getExpression().accept(this, p);
-                  StatementBuilder body = (StatementBuilder) node.getStatement().accept(this, p);
+                  ExpressionBuilder expression = scan(node.getExpression(), p);
+                  StatementBuilder body = scan(node.getStatement(), p);
                   return lang.enhancedForLoop(node.getVariable().getName().toString(), expression, body);
                 }
 
                 @Override
                 public CodeBuilder visitAssignment(AssignmentTree node, VisitContext context) {
-                  ExpressionBuilder variable = (ExpressionBuilder) node.getVariable().accept(this, context);
-                  ExpressionBuilder expression = (ExpressionBuilder) node.getExpression().accept(this, context);
+                  ExpressionBuilder variable = scan(node.getVariable(), context);
+                  ExpressionBuilder expression = scan(node.getExpression(), context);
                   return ExpressionBuilder.forAssign(variable, expression);
                 }
 
@@ -186,7 +197,7 @@ public class ConvertingProcessor extends AbstractProcessor {
                   JCTree.JCVariableDecl decl = (JCTree.JCVariableDecl) node;
                   ExpressionBuilder initializer;
                   if (node.getInitializer() != null) {
-                    initializer = (ExpressionBuilder) node.getInitializer().accept(this, p);
+                    initializer = scan(node.getInitializer(), p);
                   } else {
                     initializer = null;
                   }
@@ -200,23 +211,23 @@ public class ConvertingProcessor extends AbstractProcessor {
 
                 @Override
                 public StatementBuilder visitIf(IfTree node, VisitContext visitContext) {
-                  ExpressionBuilder condition = (ExpressionBuilder) node.getCondition().accept(this, visitContext);
-                  StatementBuilder thenBody = (StatementBuilder) node.getThenStatement().accept(this, visitContext);
-                  StatementBuilder elseBody = node.getElseStatement() != null ? (StatementBuilder) node.getElseStatement().accept(this, visitContext) : null;
+                  ExpressionBuilder condition = scan(node.getCondition(), visitContext);
+                  StatementBuilder thenBody = scan(node.getThenStatement(), visitContext);
+                  StatementBuilder elseBody = node.getElseStatement() != null ? scan(node.getElseStatement(), visitContext) : null;
                   return StatementBuilder.ifThenElse(condition, thenBody, elseBody);
                 }
 
                 @Override
                 public CodeBuilder visitConditionalExpression(ConditionalExpressionTree node, VisitContext visitContext) {
-                  ExpressionBuilder condition = (ExpressionBuilder) node.getCondition().accept(this, visitContext);
-                  ExpressionBuilder trueExpression = (ExpressionBuilder) node.getTrueExpression().accept(this, visitContext);
-                  ExpressionBuilder falseExpression = (ExpressionBuilder) node.getFalseExpression().accept(this, visitContext);
+                  ExpressionBuilder condition = scan(node.getCondition(), visitContext);
+                  ExpressionBuilder trueExpression = scan(node.getTrueExpression(), visitContext);
+                  ExpressionBuilder falseExpression = scan(node.getFalseExpression(), visitContext);
                   return ExpressionBuilder.forConditionalExpression(condition, trueExpression, falseExpression);
                 }
 
                 @Override
                 public ExpressionBuilder visitUnary(UnaryTree node, VisitContext p) {
-                  ExpressionBuilder expression = (ExpressionBuilder) node.getExpression().accept(this, p);
+                  ExpressionBuilder expression = scan(node.getExpression(), p);
                   switch (node.getKind()) {
                     case POSTFIX_INCREMENT:
                       return expression.onPostFixIncrement();
@@ -227,14 +238,14 @@ public class ConvertingProcessor extends AbstractProcessor {
 
                 @Override
                 public CodeBuilder visitExpressionStatement(ExpressionStatementTree node, VisitContext context) {
-                  ExpressionBuilder expression = (ExpressionBuilder) node.getExpression().accept(this, context);
+                  ExpressionBuilder expression = scan(node.getExpression(), context);
                   return StatementBuilder.render(renderer -> expression.render(renderer));
                 }
 
                 @Override
                 public ExpressionBuilder visitBinary(BinaryTree node, VisitContext p) {
-                  ExpressionBuilder left = (ExpressionBuilder) node.getLeftOperand().accept(this, p);
-                  ExpressionBuilder right = (ExpressionBuilder) node.getRightOperand().accept(this, p);
+                  ExpressionBuilder left = scan(node.getLeftOperand(), p);
+                  ExpressionBuilder right = scan(node.getRightOperand(), p);
                   String op;
                   switch (node.getKind()) {
                     case PLUS:
@@ -314,33 +325,33 @@ public class ConvertingProcessor extends AbstractProcessor {
 
                 @Override
                 public CodeBuilder visitNewClass(NewClassTree node, VisitContext visitContext) {
-                  ExpressionBuilder identifier = (ExpressionBuilder) node.getIdentifier().accept(this, visitContext);
-                  List<ExpressionBuilder> arguments = node.getArguments().stream().map(arg -> ( ExpressionBuilder) arg.accept(this, visitContext)).collect(Collectors.toList());
+                  ExpressionBuilder identifier = scan(node.getIdentifier(), visitContext);
+                  List<ExpressionBuilder> arguments = node.getArguments().stream().map(arg -> scan(arg, visitContext)).collect(Collectors.toList());
                   return identifier.onNew(arguments);
                 }
 
                 @Override
                 public CodeBuilder visitParenthesized(ParenthesizedTree node, VisitContext visitContext) {
-                  ExpressionBuilder expression = (ExpressionBuilder) node.getExpression().accept(this, visitContext);
+                  ExpressionBuilder expression = scan(node.getExpression(), visitContext);
                   return ExpressionBuilder.forParenthesized(expression);
                 }
 
                 @Override
                 public ExpressionBuilder visitMemberSelect(MemberSelectTree node, VisitContext p) {
-                  ExpressionBuilder expression = (ExpressionBuilder) node.getExpression().accept(this, p);
+                  ExpressionBuilder expression = scan(node.getExpression(), p);
                   return expression.onMemberSelect(node.getIdentifier().toString());
                 }
 
                 @Override
                 public ExpressionBuilder visitMethodInvocation(MethodInvocationTree node, VisitContext p) {
-                  ExpressionBuilder methodSelect = (ExpressionBuilder) node.getMethodSelect().accept(this, p);
-                  List<ExpressionBuilder> arguments = node.getArguments().stream().map(argument -> (ExpressionBuilder) argument.accept(this, p)).collect(Collectors.toList());
+                  ExpressionBuilder methodSelect = scan(node.getMethodSelect(), p);
+                  List<ExpressionBuilder> arguments = node.getArguments().stream().map(argument -> scan(argument, p)).collect(Collectors.toList());
                   return methodSelect.onMethodInvocation(arguments);
                 }
 
                 @Override
                 public StatementBuilder visitBlock(BlockTree node, VisitContext p) {
-                  List<StatementBuilder> statements = node.getStatements().stream().map((statement) -> (StatementBuilder)statement.accept(this, p)).collect(Collectors.toList());
+                  List<StatementBuilder> statements = node.getStatements().stream().map((statement) -> scan(statement, p)).collect(Collectors.toList());
                   return StatementBuilder.block(statements);
                 }
 
@@ -361,13 +372,13 @@ public class ConvertingProcessor extends AbstractProcessor {
                         TypeInfo type = TypeInfo.create(processingEnv.getElementUtils(), processingEnv.getTypeUtils(), Collections.emptyList(), sym.type);
                         if (type.getKind() == ClassKind.ASYNC_RESULT) {
                           ExpressionBuilder result = lang.asyncResult(last.name.toString());
-                          CodeBuilder body = node.getBody().accept(this, p.putAlias(last.sym, result));
+                          CodeBuilder body = scan(node.getBody(), p.putAlias(last.sym, result));
                           return lang.asyncResultHandler(node.getBodyKind(), last.name.toString(), body);
                         }
                       }
                     }
                   }
-                  CodeBuilder body = node.getBody().accept(this, p);
+                  CodeBuilder body = scan(node.getBody(), p);
                   return lang.lambda(node.getBodyKind(), parameterTypes, parameterNames, body);
                 }
 
