@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -38,6 +38,64 @@ public class GroovyLang implements Lang {
   @Override
   public String getExtension() {
     return "groovy";
+  }
+
+  // Marker class for Groovy Strings
+  static abstract class GStringLiteralBuilder extends ExpressionBuilder {
+
+    @Override
+    public final void render(Renderer renderer) {
+      renderer.append('"');
+      renderCharacters(renderer);
+      renderer.append('"');
+    }
+
+    protected abstract void renderCharacters(Renderer renderer);
+  }
+
+  private static GStringLiteralBuilder gstring(Consumer<Renderer> characters) {
+    return new GStringLiteralBuilder() {
+      @Override
+      protected void renderCharacters(Renderer renderer) {
+        characters.accept(renderer);
+      }
+    };
+  }
+
+  @Override
+  public ExpressionBuilder stringLiteral(String value) {
+    return gstring(renderer -> Lang.super.renderCharacters(value, renderer));
+  }
+
+  @Override
+  public ExpressionBuilder combine(ExpressionBuilder left, String op, ExpressionBuilder right) {
+    if (left instanceof GStringLiteralBuilder) {
+      GStringLiteralBuilder gleft = (GStringLiteralBuilder) left;
+      if (right instanceof GStringLiteralBuilder) {
+        GStringLiteralBuilder gright = (GStringLiteralBuilder) right;
+        return gstring(renderer -> {
+          gleft.renderCharacters(renderer);
+          gright.renderCharacters(renderer);
+        });
+      } else {
+        return gstring(renderer -> {
+          gleft.renderCharacters(renderer);
+          renderer.append("${");
+          right.render(renderer);
+          renderer.append("}");
+        });
+      }
+    } else if (right instanceof GStringLiteralBuilder) {
+      GStringLiteralBuilder gright = (GStringLiteralBuilder) right;
+      return gstring(renderer -> {
+        renderer.append("${");
+        left.render(renderer);
+        renderer.append("}");
+        gright.renderCharacters(renderer);
+      });
+    } else {
+      return Lang.super.combine(left, op, right);
+    }
   }
 
   @Override

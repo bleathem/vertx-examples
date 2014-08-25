@@ -260,14 +260,14 @@ public class ConvertingProcessor extends AbstractProcessor {
                     default:
                       throw new UnsupportedOperationException();
                   }
-                  return ExpressionBuilder.render(renderer -> renderer.getLang().renderBinary(left, op, right, renderer));
+                  return lang.combine(left, op, right);
                 }
 
                 @Override
                 public ExpressionBuilder visitLiteral(LiteralTree node, VisitContext p) {
                   switch (node.getKind()) {
                     case STRING_LITERAL:
-                      return ExpressionBuilder.render(renderer -> renderer.getLang().renderStringLiteral(node.getValue().toString(), renderer));
+                      return lang.stringLiteral(node.getValue().toString());
                     case BOOLEAN_LITERAL:
                       return ExpressionBuilder.render(renderer -> renderer.getLang().renderBooleanLiteral(node.getValue().toString(), renderer));
                     case INT_LITERAL:

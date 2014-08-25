@@ -17,7 +17,19 @@ public class ConversionRunner {
 
   public static void main(String[] args) throws Exception {
 
-    Map<String, String> result = ConvertingProcessor.convert(ConversionRunner.class.getClassLoader(), new JavaScriptLang(),
+    Lang lang = new JavaScriptLang();
+    switch (System.getProperty("lang")) {
+      case "groovy":
+        lang = new GroovyLang();
+        break;
+      case "js":
+        lang = new JavaScriptLang();
+        break;
+      default:
+        throw new UnsupportedOperationException();
+    }
+
+    Map<String, String> result = ConvertingProcessor.convert(ConversionRunner.class.getClassLoader(), lang,
         "echo/EchoServer.java",
         "echo/EchoClient.java",
         "http/Client.java",

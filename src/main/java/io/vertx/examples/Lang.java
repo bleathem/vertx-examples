@@ -3,7 +3,6 @@ package io.vertx.examples;
 import com.sun.source.tree.LambdaExpressionTree;
 import io.vertx.codegen.TypeInfo;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -84,8 +83,7 @@ public interface Lang {
     right.render(renderer);
   }
 
-  default void renderStringLiteral(String value, Renderer renderer) {
-    renderer.append('"');
+  default void renderCharacters(String value, Renderer renderer) {
     for (int i = 0;i < value.length();i++) {
       char c = value.charAt(i);
       switch (c) {
@@ -102,6 +100,11 @@ public interface Lang {
           renderer.append(c);
       }
     }
+  }
+
+  default void renderStringLiteral(String value, Renderer renderer) {
+    renderer.append('"');
+    renderCharacters(value, renderer);
     renderer.append('"');
   }
 
@@ -123,6 +126,14 @@ public interface Lang {
   String getExtension();
 
   //
+
+  default ExpressionBuilder stringLiteral(String value) {
+    return ExpressionBuilder.render(renderer -> renderer.getLang().renderStringLiteral(value, renderer));
+  }
+
+  default ExpressionBuilder combine(ExpressionBuilder left, String op, ExpressionBuilder right) {
+    return ExpressionBuilder.render(renderer -> renderer.getLang().renderBinary(left, op, right, renderer));
+  }
 
   ExpressionBuilder classExpression(TypeInfo.Class type);
 

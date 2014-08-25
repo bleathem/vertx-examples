@@ -193,7 +193,7 @@
                   <executable>java</executable>
                   <arguments>
                     <!--<argument>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005</argument>-->
-                    <argument>-Dlang=js</argument>
+                    <argument>-Dlang=groovy</argument>
                     <argument>-classpath</argument>
                     <classpath/>
                     <argument>io.vertx.examples.ConversionRunner</argument>
