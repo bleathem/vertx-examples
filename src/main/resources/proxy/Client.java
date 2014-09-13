@@ -20,7 +20,7 @@ public class Client extends AbstractVerticle {
     request.setChunked(true);
 
     for (int i = 0;i < 10;i++) {
-      request.writeString("client-chunk-" + i);
+      request.write("client-chunk-" + i);
     }
 
     request.end();

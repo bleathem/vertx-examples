@@ -18,11 +18,11 @@ public class SimpleFormUploadServer extends AbstractVerticle {
         req.setExpectMultipart(true);
         req.uploadHandler(upload -> {
           upload.exceptionHandler(cause -> {
-            req.response().setChunked(true).writeString("Upload failed").end();
+            req.response().setChunked(true).end("Upload failed");
           });
 
           upload.endHandler(v -> {
-            req.response().setChunked(true).writeString("Upload successful, you should see the file in the server directory").end();
+            req.response().setChunked(true).end("Upload successful, you should see the file in the server directory");
           });
           upload.streamToFileSystem(upload.filename());
         });

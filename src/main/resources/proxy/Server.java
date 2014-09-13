@@ -26,7 +26,7 @@ public class Server extends AbstractVerticle {
         req.response().setChunked(true);
 
         for (int i = 0; i < 10; i++) {
-          req.response().writeString("server-data-chunk-" + i);
+          req.response().write("server-data-chunk-" + i);
         }
 
         req.response().end();

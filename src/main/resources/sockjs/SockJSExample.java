@@ -30,7 +30,7 @@ public class SockJSExample extends AbstractVerticle {
     // The handler for the SockJS app - we just echo data back
     sockJSServer.installApp(SockJSServerOptions.options().setPrefix("/testapp"), sock -> {
       sock.dataHandler(buff -> {
-        sock.writeBuffer(buff);
+        sock.write(buff);
       });
     });
 

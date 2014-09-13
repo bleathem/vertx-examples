@@ -26,7 +26,7 @@ def sockJSServer = io.vertx.groovy.ext.sockjs.SockJSServer.sockJSServer(vertx, s
 // The handler for the SockJS app - we just echo data back
 sockJSServer.installApp([prefix: "/testapp"]) { sock ->
   sock.dataHandler { buff ->
-    sock.writeBuffer(buff)
+    sock.write(buff)
   }
 }
 

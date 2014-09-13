@@ -32,7 +32,7 @@ vertx.createHttpServer(port: 8080).requestHandler{ req ->
     req.expectMultipart = true
     req.endHandler {
       req.formAttributes().names().each { attr ->
-        req.response().writeString("Got attr " + attr + " : " + req.formAttributes().get(attr) + "\n")
+        req.response().write("Got attr " + attr + " : " + req.formAttributes().get(attr) + "\n")
       }
       req.response().end()
     };

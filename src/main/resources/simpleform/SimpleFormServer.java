@@ -19,7 +19,7 @@ public class SimpleFormServer extends AbstractVerticle {
         req.setExpectMultipart(true);
         req.endHandler((v) -> {
           for (String attr : req.formAttributes().names()) {
-            req.response().writeString("Got attr " + attr + " : " + req.formAttributes().get(attr) + "\n");
+            req.response().write("Got attr " + attr + " : " + req.formAttributes().get(attr) + "\n");
           }
           req.response().end();
         });

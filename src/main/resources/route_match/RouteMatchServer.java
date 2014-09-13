@@ -17,7 +17,7 @@ public class RouteMatchServer extends AbstractVerticle {
     // Extract the params from the uri
     rm.get("/details/:user/:id", req -> {
         // And just spit them out in the response
-        req.response().setChunked(true).writeString("User: " + req.params().get("user") + " ID: " + req.params().get("id")).end();
+        req.response().setChunked(true).end("User: " + req.params().get("user") + " ID: " + req.params().get("id"));
     });
 
     // Catch all - serve the index page

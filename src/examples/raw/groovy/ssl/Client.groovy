@@ -25,7 +25,7 @@ vertx.createNetClient(ssl: true, trustAll: true).connect(1234, "localhost") { as
     10.times {
       def str = "hello $it\n"
       println "Net client sending: $str"
-      sock.writeString(str)
+      sock.write(str)
     }
   } else {
     println "Failed to connect ${asyncResult.cause()}"

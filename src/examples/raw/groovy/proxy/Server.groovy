@@ -30,7 +30,7 @@ vertx.createHttpServer(port: 8282).requestHandler { req ->
     req.response().setChunked(true)
 
     10.times {
-      req.response().writeString("server-data-chunk-$it")
+      req.response().write("server-data-chunk-$it")
     }
 
     req.response().end()

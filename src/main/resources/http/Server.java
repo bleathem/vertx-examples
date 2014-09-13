@@ -11,7 +11,7 @@ public class Server extends AbstractVerticle {
   @Override
   public void start() throws Exception {
     vertx.createHttpServer(HttpServerOptions.options().setHost("localhost").setPort(8080)).requestHandler(req -> {
-      req.response().setChunked(true).writeString("<html><body><h1>Hello from vert.x!</h1></body></html>").end();
+      req.response().setChunked(true).end("<html><body><h1>Hello from vert.x!</h1></body></html>");
     }).listen();
   }
 }

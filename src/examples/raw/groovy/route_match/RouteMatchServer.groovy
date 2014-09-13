@@ -24,7 +24,7 @@ def rm = RouteMatcher.newRouteMatcher()
 // Extract the params from the uri
 rm.get('/details/:user/:id') { req ->
   // And just spit them out in the response
-  req.response().setChunked(true).writeString("User: ${req.params()['user']} ID: ${req.params()['id']}").end()
+  req.response().setChunked(true).end("User: ${req.params()['user']} ID: ${req.params()['id']}")
 }
 
 // Catch all - serve the index page

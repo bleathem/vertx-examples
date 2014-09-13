@@ -27,11 +27,11 @@ vertx.createHttpServer(port: 8080).requestHandler { req ->
     req.expectMultipart = true
     req.uploadHandler { upload ->
       upload.exceptionHandler { cause ->
-        req.response().setChunked(true).writeString("Upload failed").end();
+        req.response().setChunked(true).end("Upload failed");
       }
 
       upload.endHandler {
-        req.response().setChunked(true).writeString("Upload successful, you should see the file in the server directory").end();
+        req.response().setChunked(true).end("Upload successful, you should see the file in the server directory");
       }
       upload.streamToFileSystem(upload.filename());
     }

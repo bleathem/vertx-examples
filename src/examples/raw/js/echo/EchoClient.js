@@ -14,7 +14,7 @@ client.connect(1234, "localhost", function(sock, err) {
         for (var i = 0; i < 10; i++) {
             var str = "hello" + i + "\n";
             console.log("Net client sending: " + str);
-            sock.writeString(str);
+            sock.write(str);
         }
     } else {
         console.log("Failed to connect " + err)

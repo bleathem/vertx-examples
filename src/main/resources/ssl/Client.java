@@ -22,7 +22,7 @@ public class Client extends AbstractVerticle {
         for (int i = 0;i < 10;i++) {
           String str = "hello " + i + "\n";
           System.out.println("Net client sending: " + str);
-          sock.writeString(str);
+          sock.write(str);
         }
       } else {
         System.out.println("Failed to connect " + asyncResult.cause());

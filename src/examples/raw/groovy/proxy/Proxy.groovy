@@ -27,7 +27,7 @@ def server = vertx.createHttpServer(port: 8080).requestHandler { req ->
     req.response().headers().setAll(c_res.headers())
     c_res.dataHandler { data ->
       println "Proxying response body: ${data.toString('ISO-8859-1')}"
-      req.response().writeBuffer(data)
+      req.response().write(data)
     }
     c_res.endHandler { req.response().end() }
   }
@@ -35,7 +35,7 @@ def server = vertx.createHttpServer(port: 8080).requestHandler { req ->
   c_req.headers().setAll(req.headers())
   req.dataHandler { data ->
     println "Proxying request body ${data.toString('ISO-8859-1')}"
-    c_req.writeBuffer(data)
+    c_req.write(data)
   }
   req.endHandler{ c_req.end() }
 

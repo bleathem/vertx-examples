@@ -25,7 +25,7 @@ public class Proxy extends AbstractVerticle {
         req.response().headers().setAll(c_res.headers());
         c_res.dataHandler(data -> {
           System.out.println("Proxying response body: " + data.toString("ISO-8859-1"));
-          req.response().writeBuffer(data);
+          req.response().write(data);
         });
         c_res.endHandler((v) -> req.response().end());
       });
@@ -33,7 +33,7 @@ public class Proxy extends AbstractVerticle {
       c_req.headers().setAll(req.headers());
       req.dataHandler(data -> {
         System.out.println("Proxying request body " + data.toString("ISO-8859-1"));
-        c_req.writeBuffer(data);
+        c_req.write(data);
       });
       req.endHandler((v) -> c_req.end());
     }).listen();

@@ -22,6 +22,6 @@ def request = vertx.createHttpClient().put(port: 8080, requestURI: '/') { resp -
 
 request.setChunked(true)
 
-10.times { request.writeString("client-chunk-$it") }
+10.times { request.write("client-chunk-$it") }
 
 request.end()

@@ -25,7 +25,7 @@ vertx.createNetClient().connect(1234, "localhost") { asyncResult ->
     10.times {
       String str = "hello $it\n"
       print "Net client sending: $str"
-      socket.writeString(str)
+      socket.write(str)
     }
   } else {
     println "Failed to connect ${asyncResult.cause}"
