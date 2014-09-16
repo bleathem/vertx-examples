@@ -2,7 +2,12 @@ package io.vertx.examples;
 
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -31,9 +36,19 @@ public class ExamplesTest extends ConversionTestBase {
     }
   }
   
-  private void assertCompileAll(String... sources) {
+  private void assertCompileAll(String... sources) throws IOException {
     for (Lang lang : langs()) {
-      Map<String, String> result = assertCompile(lang, sources);
+      Map<String, String> results = assertCompile(lang, sources);
+      for (Map.Entry<String, String> result : results.entrySet()) {
+        File f = new File(new File(new File("target"), lang.getExtension()), result.getKey());
+        if (!f.getParentFile().exists()) {
+          assertTrue(f.getParentFile().mkdirs());
+        }
+        if (!f.exists()) {
+          assertTrue(f.createNewFile());
+        }
+        Files.write(f.toPath(), result.getValue().getBytes());
+      }
     }
   }
 

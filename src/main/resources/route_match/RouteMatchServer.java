@@ -12,7 +12,7 @@ public class RouteMatchServer extends AbstractVerticle {
   @Override
   public void start() throws Exception {
     // Inspired from Sinatra / Express
-    RouteMatcher rm = RouteMatcher.newRouteMatcher();
+    RouteMatcher rm = RouteMatcher.routeMatcher();
 
     // Extract the params from the uri
     rm.get("/details/:user/:id", req -> {
