@@ -193,7 +193,7 @@ public class ModelBuilder extends TreePathScanner<CodeModel, VisitContext> {
         } else if (type.getKind() == ClassKind.JSON_ARRAY) {
           return JsonArrayExpressionModel.CLASS_MODEL;
         } else if (type.getKind() == ClassKind.OPTIONS) {
-          return ExpressionModel.forNew(args -> lang.options(type));
+          return OptionsExpressionModel.create(type);
         } else {
           return lang.classExpression(type);
         }

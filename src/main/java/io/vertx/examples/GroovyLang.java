@@ -183,14 +183,8 @@ public class GroovyLang implements Lang {
     });
   }
 
-  @Override
-  public ExpressionModel options(TypeInfo.Class optionType) {
-    return new OptionsExpressionModel() {
-      @Override
-      public void render(CodeWriter writer) {
-        renderJsonObject(getMembers(), writer, false);
-      }
-    };
+  public void renderOptions(OptionsExpressionModel options, CodeWriter writer) {
+    renderJsonObject(options.getMembers(), writer, false);
   }
 
   public void renderJsonObject(JsonObjectExpressionModel jsonObject, CodeWriter writer) {

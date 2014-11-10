@@ -129,6 +129,8 @@ public interface Lang {
 
   void renderJsonArray(JsonArrayExpressionModel jsonArray, CodeWriter writer);
 
+  void renderOptions(OptionsExpressionModel options, CodeWriter writer);
+
   //
 
   default ExpressionModel stringLiteral(String value) {
@@ -156,8 +158,6 @@ public interface Lang {
   StatementModel forLoop(StatementModel initializer, ExpressionModel condition, ExpressionModel update, StatementModel body);
 
   //
-
-  ExpressionModel options(TypeInfo.Class optionType);
 
   ExpressionModel console(ExpressionModel expression);
 
