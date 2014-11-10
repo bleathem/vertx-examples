@@ -2,9 +2,11 @@ package io.vertx.examples;
 
 import io.vertx.codegen.TypeInfo;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -16,21 +18,15 @@ public class OptionsModel extends ExpressionModel {
   }
 
   private final TypeInfo.Class type;
-  private final OptionsModel parent;
-  private final String name;
-  private final ExpressionModel value;
-  private final boolean plural;
+  private final Map<String, Member> members;
 
   private OptionsModel(TypeInfo.Class type) {
-    this(type, null, null, null, false);
+    this(type, Collections.emptyMap());
   }
 
-  private OptionsModel(TypeInfo.Class type, OptionsModel parent, String name, ExpressionModel value, boolean plural) {
-    this.parent = parent;
-    this.name = name;
-    this.value = value;
-    this.plural = plural;
+  private OptionsModel(TypeInfo.Class type, Map<String, Member> members) {
     this.type = type;
+    this.members = members;
   }
 
   public TypeInfo.Class getType() {
@@ -38,31 +34,19 @@ public class OptionsModel extends ExpressionModel {
   }
 
   public Iterable<Member> getMembers() {
-    return getMemberMap().values();
-  }
-
-  private Map<String, Member> getMemberMap() {
-    if (parent == null) {
-      return new LinkedHashMap<>();
-    } else {
-      Map<String, Member> members = parent.getMemberMap();
-      ExpressionModel nameExpr = ExpressionModel.render(name);
-      Member member = members.computeIfAbsent(name, name -> plural ? new Member.Array(nameExpr) : new Member.Single(nameExpr));
-      member.append(value);
-      return members;
-    }
+    return members.values();
   }
 
   @Override
   public ExpressionModel onMemberSelect(String identifier) {
     String name;
-    boolean plural;
+    Function<String, Member> memberFactory;
     if (identifier.length() > 3 && identifier.startsWith("set")) {
       name = Character.toLowerCase(identifier.charAt(3)) + identifier.substring(4);
-      plural = false;
+      memberFactory = $ -> new Member.Single(ExpressionModel.render(name));
     } else if (identifier.length() > 3 && identifier.startsWith("add")) {
       name = Character.toLowerCase(identifier.charAt(3)) + identifier.substring(4) + "s"; // 's' for plural
-      plural = true;
+      memberFactory = $ -> new Member.Array(ExpressionModel.render(name));
     } else {
       throw new UnsupportedOperationException("Not implemented");
     }
@@ -70,8 +54,12 @@ public class OptionsModel extends ExpressionModel {
       @Override
       public ExpressionModel onMethodInvocation(List<ExpressionModel> arguments) {
         if (arguments.size() == 1) {
+          Map<String, Member> copy = new LinkedHashMap<>(members);
           ExpressionModel value = arguments.get(0);
-          return new OptionsModel(type, OptionsModel.this, name, value, plural);
+          Member member = copy.computeIfAbsent(name, memberFactory);
+          member.append(value);
+          copy.put(name, member);
+          return new OptionsModel(type, copy);
         } else {
           throw new UnsupportedOperationException("not yet implemented");
         }
