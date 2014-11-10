@@ -155,49 +155,49 @@ public class ConvertingProcessor extends AbstractProcessor {
             if (exeElt.getSimpleName().toString().equals("start") && exeElt.getParameters().isEmpty()) {
               attributeClass(rootElt);
               TreePath path = trees.getPath(exeElt);
-              TreePathScanner<CodeBuilder, VisitContext> visitor = new TreePathScanner<CodeBuilder, VisitContext>() {
+              TreePathScanner<CodeModel, VisitContext> visitor = new TreePathScanner<CodeModel, VisitContext>() {
 
-                public StatementBuilder scan(StatementTree tree, VisitContext visitContext) {
-                  return (StatementBuilder) scan((Tree) tree, visitContext);
+                public StatementModel scan(StatementTree tree, VisitContext visitContext) {
+                  return (StatementModel) scan((Tree) tree, visitContext);
                 }
 
-                public ExpressionBuilder scan(ExpressionTree tree, VisitContext visitContext) {
-                  return (ExpressionBuilder) scan((Tree) tree, visitContext);
+                public ExpressionModel scan(ExpressionTree tree, VisitContext visitContext) {
+                  return (ExpressionModel) scan((Tree) tree, visitContext);
                 }
 
                 @Override
-                public CodeBuilder visitForLoop(ForLoopTree node, VisitContext p) {
+                public CodeModel visitForLoop(ForLoopTree node, VisitContext p) {
                   if (node.getInitializer().size() != 1) {
                     throw new UnsupportedOperationException();
                   }
                   if (node.getUpdate().size() != 1) {
                     throw new UnsupportedOperationException();
                   }
-                  StatementBuilder initializer = scan(node.getInitializer().get(0), p);
-                  ExpressionBuilder update = scan(node.getUpdate().get(0).getExpression(), p);
-                  StatementBuilder body = scan(node.getStatement(), p);
-                  ExpressionBuilder condition = scan(node.getCondition(), p);
+                  StatementModel initializer = scan(node.getInitializer().get(0), p);
+                  ExpressionModel update = scan(node.getUpdate().get(0).getExpression(), p);
+                  StatementModel body = scan(node.getStatement(), p);
+                  ExpressionModel condition = scan(node.getCondition(), p);
                   return lang.forLoop(initializer, condition, update, body);
                 }
 
                 @Override
-                public CodeBuilder visitEnhancedForLoop(EnhancedForLoopTree node, VisitContext p) {
-                  ExpressionBuilder expression = scan(node.getExpression(), p);
-                  StatementBuilder body = scan(node.getStatement(), p);
+                public CodeModel visitEnhancedForLoop(EnhancedForLoopTree node, VisitContext p) {
+                  ExpressionModel expression = scan(node.getExpression(), p);
+                  StatementModel body = scan(node.getStatement(), p);
                   return lang.enhancedForLoop(node.getVariable().getName().toString(), expression, body);
                 }
 
                 @Override
-                public CodeBuilder visitAssignment(AssignmentTree node, VisitContext context) {
-                  ExpressionBuilder variable = scan(node.getVariable(), context);
-                  ExpressionBuilder expression = scan(node.getExpression(), context);
-                  return ExpressionBuilder.forAssign(variable, expression);
+                public CodeModel visitAssignment(AssignmentTree node, VisitContext context) {
+                  ExpressionModel variable = scan(node.getVariable(), context);
+                  ExpressionModel expression = scan(node.getExpression(), context);
+                  return ExpressionModel.forAssign(variable, expression);
                 }
 
                 @Override
-                public StatementBuilder visitVariable(VariableTree node, VisitContext p) {
+                public StatementModel visitVariable(VariableTree node, VisitContext p) {
                   JCTree.JCVariableDecl decl = (JCTree.JCVariableDecl) node;
-                  ExpressionBuilder initializer;
+                  ExpressionModel initializer;
                   if (node.getInitializer() != null) {
                     initializer = scan(node.getInitializer(), p);
                   } else {
@@ -212,24 +212,24 @@ public class ConvertingProcessor extends AbstractProcessor {
                 }
 
                 @Override
-                public StatementBuilder visitIf(IfTree node, VisitContext visitContext) {
-                  ExpressionBuilder condition = scan(node.getCondition(), visitContext);
-                  StatementBuilder thenBody = scan(node.getThenStatement(), visitContext);
-                  StatementBuilder elseBody = node.getElseStatement() != null ? scan(node.getElseStatement(), visitContext) : null;
-                  return StatementBuilder.ifThenElse(condition, thenBody, elseBody);
+                public StatementModel visitIf(IfTree node, VisitContext visitContext) {
+                  ExpressionModel condition = scan(node.getCondition(), visitContext);
+                  StatementModel thenBody = scan(node.getThenStatement(), visitContext);
+                  StatementModel elseBody = node.getElseStatement() != null ? scan(node.getElseStatement(), visitContext) : null;
+                  return StatementModel.ifThenElse(condition, thenBody, elseBody);
                 }
 
                 @Override
-                public CodeBuilder visitConditionalExpression(ConditionalExpressionTree node, VisitContext visitContext) {
-                  ExpressionBuilder condition = scan(node.getCondition(), visitContext);
-                  ExpressionBuilder trueExpression = scan(node.getTrueExpression(), visitContext);
-                  ExpressionBuilder falseExpression = scan(node.getFalseExpression(), visitContext);
-                  return ExpressionBuilder.forConditionalExpression(condition, trueExpression, falseExpression);
+                public CodeModel visitConditionalExpression(ConditionalExpressionTree node, VisitContext visitContext) {
+                  ExpressionModel condition = scan(node.getCondition(), visitContext);
+                  ExpressionModel trueExpression = scan(node.getTrueExpression(), visitContext);
+                  ExpressionModel falseExpression = scan(node.getFalseExpression(), visitContext);
+                  return ExpressionModel.forConditionalExpression(condition, trueExpression, falseExpression);
                 }
 
                 @Override
-                public ExpressionBuilder visitUnary(UnaryTree node, VisitContext p) {
-                  ExpressionBuilder expression = scan(node.getExpression(), p);
+                public ExpressionModel visitUnary(UnaryTree node, VisitContext p) {
+                  ExpressionModel expression = scan(node.getExpression(), p);
                   switch (node.getKind()) {
                     case POSTFIX_INCREMENT:
                       return expression.onPostFixIncrement();
@@ -239,15 +239,15 @@ public class ConvertingProcessor extends AbstractProcessor {
                 }
 
                 @Override
-                public CodeBuilder visitExpressionStatement(ExpressionStatementTree node, VisitContext context) {
-                  ExpressionBuilder expression = scan(node.getExpression(), context);
-                  return StatementBuilder.render(renderer -> expression.render(renderer));
+                public CodeModel visitExpressionStatement(ExpressionStatementTree node, VisitContext context) {
+                  ExpressionModel expression = scan(node.getExpression(), context);
+                  return StatementModel.render(renderer -> expression.render(renderer));
                 }
 
                 @Override
-                public ExpressionBuilder visitBinary(BinaryTree node, VisitContext p) {
-                  ExpressionBuilder left = scan(node.getLeftOperand(), p);
-                  ExpressionBuilder right = scan(node.getRightOperand(), p);
+                public ExpressionModel visitBinary(BinaryTree node, VisitContext p) {
+                  ExpressionModel left = scan(node.getLeftOperand(), p);
+                  ExpressionModel right = scan(node.getRightOperand(), p);
                   String op;
                   switch (node.getKind()) {
                     case PLUS:
@@ -266,33 +266,33 @@ public class ConvertingProcessor extends AbstractProcessor {
                 }
 
                 @Override
-                public ExpressionBuilder visitLiteral(LiteralTree node, VisitContext p) {
+                public ExpressionModel visitLiteral(LiteralTree node, VisitContext p) {
                   switch (node.getKind()) {
                     case STRING_LITERAL:
                       return lang.stringLiteral(node.getValue().toString());
                     case BOOLEAN_LITERAL:
-                      return ExpressionBuilder.render(renderer -> renderer.getLang().renderBooleanLiteral(node.getValue().toString(), renderer));
+                      return ExpressionModel.render(renderer -> renderer.getLang().renderBooleanLiteral(node.getValue().toString(), renderer));
                     case INT_LITERAL:
-                      return ExpressionBuilder.render(renderer -> renderer.getLang().renderIntegerLiteral(node.getValue().toString(), renderer));
+                      return ExpressionModel.render(renderer -> renderer.getLang().renderIntegerLiteral(node.getValue().toString(), renderer));
                     default:
                       throw new UnsupportedOperationException();
                   }
                 }
 
                 @Override
-                public ExpressionBuilder visitIdentifier(IdentifierTree node, VisitContext context) {
+                public ExpressionModel visitIdentifier(IdentifierTree node, VisitContext context) {
                   JCTree.JCIdent ident = (JCTree.JCIdent) node;
                   if (ident.sym instanceof TypeElement) {
                     if (ident.type.equals(SystemType)) {
-                      return ExpressionBuilder.forMemberSelect("out", () ->
-                          ExpressionBuilder.forMemberSelect("println", () ->
-                              ExpressionBuilder.forMethodInvocation(args -> lang.console(args.get(0)))));
+                      return ExpressionModel.forMemberSelect("out", () ->
+                          ExpressionModel.forMemberSelect("println", () ->
+                              ExpressionModel.forMethodInvocation(args -> lang.console(args.get(0)))));
                     } else {
                       TypeInfo.Class type = (TypeInfo.Class) factory.create(ident.type);
                       if (type.getKind() == ClassKind.API) {
-                        return ExpressionBuilder.forMemberSelect((identifier) -> lang.staticFactory(type, identifier));
+                        return ExpressionModel.forMemberSelect((identifier) -> lang.staticFactory(type, identifier));
                       } else if (type.getKind() == ClassKind.JSON_OBJECT) {
-                        return ExpressionBuilder.forNew(args -> {
+                        return ExpressionModel.forNew(args -> {
                           switch (args.size()) {
                             case 0:
                               return lang.jsonObject();
@@ -301,7 +301,7 @@ public class ConvertingProcessor extends AbstractProcessor {
                           }
                         });
                       } else if (type.getKind() == ClassKind.JSON_ARRAY) {
-                        return ExpressionBuilder.forNew(args -> {
+                        return ExpressionModel.forNew(args -> {
                           switch (args.size()) {
                             case 0:
                               return lang.jsonArray();
@@ -310,55 +310,55 @@ public class ConvertingProcessor extends AbstractProcessor {
                           }
                         });
                       } else if (type.getKind() == ClassKind.OPTIONS) {
-                        return ExpressionBuilder.forNew(args -> lang.options(type));
+                        return ExpressionModel.forNew(args -> lang.options(type));
                       } else {
                         return lang.classExpression(type);
                       }
                     }
                   } else {
-                    ExpressionBuilder alias = context.getAlias(ident.sym);
+                    ExpressionModel alias = context.getAlias(ident.sym);
                     if (alias != null) {
                       return alias;
                     } else {
-                      return ExpressionBuilder.render(node.getName().toString());
+                      return ExpressionModel.render(node.getName().toString());
                     }
                   }
                 }
 
                 @Override
-                public CodeBuilder visitNewClass(NewClassTree node, VisitContext visitContext) {
-                  ExpressionBuilder identifier = scan(node.getIdentifier(), visitContext);
-                  List<ExpressionBuilder> arguments = node.getArguments().stream().map(arg -> scan(arg, visitContext)).collect(Collectors.toList());
+                public CodeModel visitNewClass(NewClassTree node, VisitContext visitContext) {
+                  ExpressionModel identifier = scan(node.getIdentifier(), visitContext);
+                  List<ExpressionModel> arguments = node.getArguments().stream().map(arg -> scan(arg, visitContext)).collect(Collectors.toList());
                   return identifier.onNew(arguments);
                 }
 
                 @Override
-                public CodeBuilder visitParenthesized(ParenthesizedTree node, VisitContext visitContext) {
-                  ExpressionBuilder expression = scan(node.getExpression(), visitContext);
-                  return ExpressionBuilder.forParenthesized(expression);
+                public CodeModel visitParenthesized(ParenthesizedTree node, VisitContext visitContext) {
+                  ExpressionModel expression = scan(node.getExpression(), visitContext);
+                  return ExpressionModel.forParenthesized(expression);
                 }
 
                 @Override
-                public ExpressionBuilder visitMemberSelect(MemberSelectTree node, VisitContext p) {
-                  ExpressionBuilder expression = scan(node.getExpression(), p);
+                public ExpressionModel visitMemberSelect(MemberSelectTree node, VisitContext p) {
+                  ExpressionModel expression = scan(node.getExpression(), p);
                   return expression.onMemberSelect(node.getIdentifier().toString());
                 }
 
                 @Override
-                public ExpressionBuilder visitMethodInvocation(MethodInvocationTree node, VisitContext p) {
-                  ExpressionBuilder methodSelect = scan(node.getMethodSelect(), p);
-                  List<ExpressionBuilder> arguments = node.getArguments().stream().map(argument -> scan(argument, p)).collect(Collectors.toList());
+                public ExpressionModel visitMethodInvocation(MethodInvocationTree node, VisitContext p) {
+                  ExpressionModel methodSelect = scan(node.getMethodSelect(), p);
+                  List<ExpressionModel> arguments = node.getArguments().stream().map(argument -> scan(argument, p)).collect(Collectors.toList());
                   return methodSelect.onMethodInvocation(arguments);
                 }
 
                 @Override
-                public StatementBuilder visitBlock(BlockTree node, VisitContext p) {
-                  List<StatementBuilder> statements = node.getStatements().stream().map((statement) -> scan(statement, p)).collect(Collectors.toList());
-                  return StatementBuilder.block(statements);
+                public StatementModel visitBlock(BlockTree node, VisitContext p) {
+                  List<StatementModel> statements = node.getStatements().stream().map((statement) -> scan(statement, p)).collect(Collectors.toList());
+                  return StatementModel.block(statements);
                 }
 
                 @Override
-                public ExpressionBuilder visitLambdaExpression(LambdaExpressionTree node, VisitContext p) {
+                public ExpressionModel visitLambdaExpression(LambdaExpressionTree node, VisitContext p) {
                   List<String> parameterNames = node.getParameters().stream().map(parameter -> parameter.getName().toString()).collect(Collectors.toList());
                   List<TypeInfo> parameterTypes = node.getParameters().stream().
                       map(parameter -> factory.create(((JCTree.JCVariableDecl) parameter).type)).
@@ -373,23 +373,23 @@ public class ConvertingProcessor extends AbstractProcessor {
                         Symbol.ClassSymbol sym = (Symbol.ClassSymbol) clazz.sym;
                         TypeInfo type = factory.create(sym.type);
                         if (type.getKind() == ClassKind.ASYNC_RESULT) {
-                          ExpressionBuilder result = lang.asyncResult(last.name.toString());
-                          CodeBuilder body = scan(node.getBody(), p.putAlias(last.sym, result));
+                          ExpressionModel result = lang.asyncResult(last.name.toString());
+                          CodeModel body = scan(node.getBody(), p.putAlias(last.sym, result));
                           return lang.asyncResultHandler(node.getBodyKind(), last.name.toString(), body);
                         }
                       }
                     }
                   }
-                  CodeBuilder body = scan(node.getBody(), p);
+                  CodeModel body = scan(node.getBody(), p);
                   return lang.lambda(node.getBodyKind(), parameterTypes, parameterNames, body);
                 }
 
                 @Override
-                public CodeBuilder visitMethod(MethodTree node, VisitContext p) {
+                public CodeModel visitMethod(MethodTree node, VisitContext p) {
                   return scan(node.getBody(), p);
                 }
               };
-              CodeBuilder src = visitor.scan(path, new VisitContext());
+              CodeModel src = visitor.scan(path, new VisitContext());
               CodeWriter writer = new CodeWriter(lang);
               src.render(writer);
               result.put(rootElt.toString().replace('.', '/') + '.' + lang.getExtension(), writer.getBuffer().toString());

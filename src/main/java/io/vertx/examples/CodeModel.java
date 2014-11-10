@@ -3,11 +3,11 @@ package io.vertx.examples;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class CodeBuilder {
+public class CodeModel {
 
   private final Exception where;
 
-  public CodeBuilder() {
+  public CodeModel() {
     this.where = new UnsupportedOperationException();
   }
 

@@ -7,26 +7,26 @@ import java.util.function.BiConsumer;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class JsonObjectLiteralExpressionBuilder extends ExpressionBuilder {
+public class JsonObjectLiteralExpressionModel extends ExpressionModel {
 
   private final BiConsumer<Iterable<Member>, CodeWriter> renderer;
   private final Lang lang;
   private String member;
   private LinkedHashMap<String, Member> entries = new LinkedHashMap<>();
 
-  public JsonObjectLiteralExpressionBuilder(Lang lang, BiConsumer<Iterable<Member>, CodeWriter> renderer) {
+  public JsonObjectLiteralExpressionModel(Lang lang, BiConsumer<Iterable<Member>, CodeWriter> renderer) {
     this.lang = lang;
     this.renderer = renderer;
   }
 
   @Override
-  public ExpressionBuilder onMemberSelect(String identifier) {
+  public ExpressionModel onMemberSelect(String identifier) {
     this.member = identifier;
     return this;
   }
 
   @Override
-  public ExpressionBuilder onMethodInvocation(List<ExpressionBuilder> arguments) {
+  public ExpressionModel onMethodInvocation(List<ExpressionModel> arguments) {
     switch (member) {
       case "put":
         String name = unwrapQuotedString(arguments.get(0).render(lang));

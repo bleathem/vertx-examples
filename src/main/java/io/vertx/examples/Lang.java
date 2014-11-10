@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface Lang {
 
-  default void renderIfThenElse(ExpressionBuilder condition, StatementBuilder thenBody, StatementBuilder elseBody, CodeWriter writer) {
+  default void renderIfThenElse(ExpressionModel condition, StatementModel thenBody, StatementModel elseBody, CodeWriter writer) {
     writer.append("if ");
     condition.render(writer);
     writer.append(" {\n");
@@ -27,19 +27,19 @@ public interface Lang {
     }
   }
 
-  default void renderParenthesized(ExpressionBuilder expression, CodeWriter writer) {
+  default void renderParenthesized(ExpressionModel expression, CodeWriter writer) {
     writer.append('(');
     expression.render(writer);
     writer.append(')');
   }
 
-  default void renderEquals(ExpressionBuilder expression, ExpressionBuilder arg, CodeWriter writer) {
+  default void renderEquals(ExpressionModel expression, ExpressionModel arg, CodeWriter writer) {
     expression.render(writer);
     writer.append(" == ");
     arg.render(writer);
   }
 
-  default void renderConditionalExpression(ExpressionBuilder condition, ExpressionBuilder trueExpression, ExpressionBuilder falseExpression, CodeWriter writer) {
+  default void renderConditionalExpression(ExpressionModel condition, ExpressionModel trueExpression, ExpressionModel falseExpression, CodeWriter writer) {
     condition.render(writer);
     writer.append(" ? ");
     trueExpression.render(writer);
@@ -47,25 +47,25 @@ public interface Lang {
     falseExpression.render(writer);
   }
 
-  default void renderAssign(ExpressionBuilder variable, ExpressionBuilder expression, CodeWriter writer) {
+  default void renderAssign(ExpressionModel variable, ExpressionModel expression, CodeWriter writer) {
     variable.render(writer);
     writer.append(" = ");
     expression.render(writer);
   }
 
-  default void renderBlock(List<StatementBuilder> statements, CodeWriter writer) {
+  default void renderBlock(List<StatementModel> statements, CodeWriter writer) {
     statements.forEach(statement -> {
       statement.render(writer);
       writer.append(";\n");
     });
   }
 
-  default void renderMemberSelect(ExpressionBuilder expression, String identifier, CodeWriter writer) {
+  default void renderMemberSelect(ExpressionModel expression, String identifier, CodeWriter writer) {
     expression.render(writer);
     writer.append('.').append(identifier);
   }
 
-  default void renderMethodInvocation(ExpressionBuilder expression, List<ExpressionBuilder> arguments, CodeWriter writer) {
+  default void renderMethodInvocation(ExpressionModel expression, List<ExpressionModel> arguments, CodeWriter writer) {
     expression.render(writer);
     writer.append('(');
     for (int i = 0; i < arguments.size(); i++) {
@@ -77,7 +77,7 @@ public interface Lang {
     writer.append(')');
   }
 
-  default void renderBinary(ExpressionBuilder left, String op, ExpressionBuilder right, CodeWriter writer) {
+  default void renderBinary(ExpressionModel left, String op, ExpressionModel right, CodeWriter writer) {
     left.render(writer);
     writer.append(" ").append(op).append(" ");
     right.render(writer);
@@ -116,7 +116,7 @@ public interface Lang {
     writer.append(value);
   }
 
-  default void renderPostFixIncrement(ExpressionBuilder expression, CodeWriter writer) {
+  default void renderPostFixIncrement(ExpressionModel expression, CodeWriter writer) {
     expression.render(writer);
     writer.append("++");
   }
@@ -127,38 +127,38 @@ public interface Lang {
 
   //
 
-  default ExpressionBuilder stringLiteral(String value) {
-    return ExpressionBuilder.render(renderer -> renderer.getLang().renderStringLiteral(value, renderer));
+  default ExpressionModel stringLiteral(String value) {
+    return ExpressionModel.render(renderer -> renderer.getLang().renderStringLiteral(value, renderer));
   }
 
-  default ExpressionBuilder combine(ExpressionBuilder left, String op, ExpressionBuilder right) {
-    return ExpressionBuilder.render(renderer -> renderer.getLang().renderBinary(left, op, right, renderer));
+  default ExpressionModel combine(ExpressionModel left, String op, ExpressionModel right) {
+    return ExpressionModel.render(renderer -> renderer.getLang().renderBinary(left, op, right, renderer));
   }
 
-  ExpressionBuilder classExpression(TypeInfo.Class type);
+  ExpressionModel classExpression(TypeInfo.Class type);
 
-  ExpressionBuilder lambda(LambdaExpressionTree.BodyKind bodyKind, List<TypeInfo> parameterTypes, List<String> parameterNames, CodeBuilder body);
+  ExpressionModel lambda(LambdaExpressionTree.BodyKind bodyKind, List<TypeInfo> parameterTypes, List<String> parameterNames, CodeModel body);
 
-  ExpressionBuilder asyncResult(String identifier);
+  ExpressionModel asyncResult(String identifier);
 
-  ExpressionBuilder asyncResultHandler(LambdaExpressionTree.BodyKind bodyKind, String resultName, CodeBuilder body);
+  ExpressionModel asyncResultHandler(LambdaExpressionTree.BodyKind bodyKind, String resultName, CodeModel body);
 
-  ExpressionBuilder staticFactory(TypeInfo.Class type, String methodName);
+  ExpressionModel staticFactory(TypeInfo.Class type, String methodName);
 
-  StatementBuilder variable(TypeInfo type, String name, ExpressionBuilder initializer);
+  StatementModel variable(TypeInfo type, String name, ExpressionModel initializer);
 
-  StatementBuilder enhancedForLoop(String variableName, ExpressionBuilder expression, StatementBuilder body);
+  StatementModel enhancedForLoop(String variableName, ExpressionModel expression, StatementModel body);
 
-  StatementBuilder forLoop(StatementBuilder initializer, ExpressionBuilder condition, ExpressionBuilder update, StatementBuilder body);
+  StatementModel forLoop(StatementModel initializer, ExpressionModel condition, ExpressionModel update, StatementModel body);
 
   //
 
-  ExpressionBuilder options(TypeInfo.Class optionType);
+  ExpressionModel options(TypeInfo.Class optionType);
 
-  ExpressionBuilder jsonObject();
+  ExpressionModel jsonObject();
 
-  ExpressionBuilder jsonArray();
+  ExpressionModel jsonArray();
 
-  ExpressionBuilder console(ExpressionBuilder expression);
+  ExpressionModel console(ExpressionModel expression);
 
 }

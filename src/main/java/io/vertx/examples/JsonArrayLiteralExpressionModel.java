@@ -7,24 +7,24 @@ import java.util.function.BiConsumer;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class JsonArrayLiteralExpressionBuilder extends ExpressionBuilder {
+public class JsonArrayLiteralExpressionModel extends ExpressionModel {
 
-  private final BiConsumer<List<ExpressionBuilder>, CodeWriter> renderer;
+  private final BiConsumer<List<ExpressionModel>, CodeWriter> renderer;
   private String member;
-  private List<ExpressionBuilder> values = new ArrayList<>();
+  private List<ExpressionModel> values = new ArrayList<>();
 
-  public JsonArrayLiteralExpressionBuilder(BiConsumer<List<ExpressionBuilder>, CodeWriter> renderer) {
+  public JsonArrayLiteralExpressionModel(BiConsumer<List<ExpressionModel>, CodeWriter> renderer) {
     this.renderer = renderer;
   }
 
   @Override
-  public ExpressionBuilder onMemberSelect(String identifier) {
+  public ExpressionModel onMemberSelect(String identifier) {
     this.member = identifier;
     return this;
   }
 
   @Override
-  public ExpressionBuilder onMethodInvocation(List<ExpressionBuilder> arguments) {
+  public ExpressionModel onMethodInvocation(List<ExpressionModel> arguments) {
     switch (member) {
       case "add":
         values.add(arguments.get(0));

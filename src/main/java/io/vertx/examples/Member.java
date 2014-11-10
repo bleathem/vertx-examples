@@ -10,7 +10,7 @@ public abstract class Member {
 
   final String name;
 
-  protected abstract Member append(ExpressionBuilder builder);
+  protected abstract Member append(ExpressionModel builder);
 
   public Member(String name) {
     this.name = name;
@@ -18,14 +18,14 @@ public abstract class Member {
 
   public static class Single extends Member {
 
-    ExpressionBuilder value;
+    ExpressionModel value;
 
     public Single(String name) {
       super(name);
     }
 
     @Override
-    protected Member append(ExpressionBuilder value) {
+    protected Member append(ExpressionModel value) {
       this.value = value;
       return this;
     }
@@ -33,14 +33,14 @@ public abstract class Member {
 
   public static class Array extends Member {
 
-    List<ExpressionBuilder> values = new ArrayList<>();
+    List<ExpressionModel> values = new ArrayList<>();
 
     public Array(String name) {
       super(name);
     }
 
     @Override
-    protected Member append(ExpressionBuilder value) {
+    protected Member append(ExpressionModel value) {
       this.values.add(value);
       return this;
     }

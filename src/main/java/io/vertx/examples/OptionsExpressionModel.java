@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class OptionsExpressionBuilder extends ExpressionBuilder {
+public class OptionsExpressionModel extends ExpressionModel {
 
   private Member member;
   private LinkedHashMap<String, Member> members = new LinkedHashMap<>();
@@ -16,7 +16,7 @@ public class OptionsExpressionBuilder extends ExpressionBuilder {
   }
 
   @Override
-  public ExpressionBuilder onMemberSelect(String identifier) {
+  public ExpressionModel onMemberSelect(String identifier) {
     if (identifier.length() > 3 && identifier.startsWith("set")) {
       String name = Character.toLowerCase(identifier.charAt(3)) + identifier.substring(4);
       member = members.get(name);
@@ -36,7 +36,7 @@ public class OptionsExpressionBuilder extends ExpressionBuilder {
   }
 
   @Override
-  public ExpressionBuilder onMethodInvocation(List<ExpressionBuilder> arguments) {
+  public ExpressionModel onMethodInvocation(List<ExpressionModel> arguments) {
     if (arguments.size() == 1) {
       member.append(arguments.get(0));
       member = null;

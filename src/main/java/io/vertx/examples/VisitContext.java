@@ -11,23 +11,23 @@ import java.util.Map;
  */
 public class VisitContext {
 
-  private final Map<Symbol, ExpressionBuilder> aliases;
+  private final Map<Symbol, ExpressionModel> aliases;
 
   public VisitContext() {
     aliases = Collections.emptyMap();
   }
 
-  private VisitContext(Map<Symbol, ExpressionBuilder> aliases) {
+  private VisitContext(Map<Symbol, ExpressionModel> aliases) {
     this.aliases = aliases;
   }
 
-  public VisitContext putAlias(Symbol symbol, ExpressionBuilder builder) {
-    HashMap<Symbol, ExpressionBuilder> clone = new HashMap<>(aliases);
+  public VisitContext putAlias(Symbol symbol, ExpressionModel builder) {
+    HashMap<Symbol, ExpressionModel> clone = new HashMap<>(aliases);
     clone.put(symbol, builder);
     return new VisitContext(clone);
   }
 
-  public ExpressionBuilder getAlias(Symbol symbol) {
+  public ExpressionModel getAlias(Symbol symbol) {
     return aliases.get(symbol);
   }
 
