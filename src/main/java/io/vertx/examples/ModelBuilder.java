@@ -138,7 +138,7 @@ public class ModelBuilder extends TreePathScanner<CodeModel, VisitContext> {
   @Override
   public CodeModel visitExpressionStatement(ExpressionStatementTree node, VisitContext context) {
     ExpressionModel expression = scan(node.getExpression(), context);
-    return StatementModel.render(renderer -> expression.render(renderer));
+    return StatementModel.render(expression::render);
   }
 
   @Override
