@@ -18,11 +18,11 @@ public class StatementBuilder extends CodeBuilder {
     return StatementBuilder.render(renderer -> renderer.getLang().renderBlock(statements, renderer));
   }
 
-  public static StatementBuilder render(Consumer<Renderer> c) {
+  public static StatementBuilder render(Consumer<CodeWriter> c) {
     return new StatementBuilder() {
       @Override
-      public void render(Renderer renderer) {
-        c.accept(renderer);
+      public void render(CodeWriter writer) {
+        c.accept(writer);
       }
     };
   }
@@ -30,8 +30,8 @@ public class StatementBuilder extends CodeBuilder {
   public static StatementBuilder render(String s) {
     return new StatementBuilder() {
       @Override
-      public void render(Renderer renderer) {
-        renderer.append(s);
+      public void render(CodeWriter writer) {
+        writer.append(s);
       }
     };
   }

@@ -102,11 +102,11 @@ public class ExpressionBuilder extends CodeBuilder {
     };
   }
 
-  public static ExpressionBuilder render(Consumer<Renderer> c) {
+  public static ExpressionBuilder render(Consumer<CodeWriter> c) {
     return new ExpressionBuilder() {
       @Override
-      public void render(Renderer renderer) {
-        c.accept(renderer);
+      public void render(CodeWriter writer) {
+        c.accept(writer);
       }
     };
   }
@@ -114,8 +114,8 @@ public class ExpressionBuilder extends CodeBuilder {
   public static ExpressionBuilder render(Supplier<String> f) {
     return new ExpressionBuilder() {
       @Override
-      public void render(Renderer renderer) {
-        renderer.append(f.get());
+      public void render(CodeWriter writer) {
+        writer.append(f.get());
       }
     };
   }
@@ -123,8 +123,8 @@ public class ExpressionBuilder extends CodeBuilder {
   public static ExpressionBuilder render(String s) {
     return new ExpressionBuilder() {
       @Override
-      public void render(Renderer renderer) {
-        renderer.append(s);
+      public void render(CodeWriter writer) {
+        writer.append(s);
       }
     };
   }

@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  */
 public class GroovyLang implements Lang {
 
-  static class GroovyRenderer extends Renderer {
+  static class GroovyRenderer extends CodeWriter {
     LinkedHashSet<TypeInfo.Class> imports = new LinkedHashSet<>();
     GroovyRenderer(Lang lang) {
       super(lang);
@@ -22,16 +22,16 @@ public class GroovyLang implements Lang {
   }
 
   @Override
-  public void renderBlock(List<StatementBuilder> statements, Renderer renderer) {
-    if (renderer instanceof GroovyRenderer) {
-      Lang.super.renderBlock(statements, renderer);
+  public void renderBlock(List<StatementBuilder> statements, CodeWriter writer) {
+    if (writer instanceof GroovyRenderer) {
+      Lang.super.renderBlock(statements, writer);
     } else {
       GroovyRenderer langRenderer = new GroovyRenderer(this);
       Lang.super.renderBlock(statements, langRenderer);
       for (TypeInfo.Class importedType : langRenderer.imports) {
-        renderer.append("import ").append(importedType.getName().replace("io.vertx.", "io.vertx.groovy.")).append('\n');
+        writer.append("import ").append(importedType.getName().replace("io.vertx.", "io.vertx.groovy.")).append('\n');
       }
-      renderer.append(langRenderer.getBuffer());
+      writer.append(langRenderer.getBuffer());
     }
   }
 
@@ -44,20 +44,20 @@ public class GroovyLang implements Lang {
   static abstract class GStringLiteralBuilder extends ExpressionBuilder {
 
     @Override
-    public final void render(Renderer renderer) {
-      renderer.append('"');
-      renderCharacters(renderer);
-      renderer.append('"');
+    public final void render(CodeWriter writer) {
+      writer.append('"');
+      renderCharacters(writer);
+      writer.append('"');
     }
 
-    protected abstract void renderCharacters(Renderer renderer);
+    protected abstract void renderCharacters(CodeWriter writer);
   }
 
-  private static GStringLiteralBuilder gstring(Consumer<Renderer> characters) {
+  private static GStringLiteralBuilder gstring(Consumer<CodeWriter> characters) {
     return new GStringLiteralBuilder() {
       @Override
-      protected void renderCharacters(Renderer renderer) {
-        characters.accept(renderer);
+      protected void renderCharacters(CodeWriter writer) {
+        characters.accept(writer);
       }
     };
   }
@@ -187,8 +187,8 @@ public class GroovyLang implements Lang {
   public ExpressionBuilder options(TypeInfo.Class optionType) {
     return new OptionsExpressionBuilder() {
       @Override
-      public void render(Renderer renderer) {
-        renderJsonObject(getMembers(), renderer);
+      public void render(CodeWriter writer) {
+        renderJsonObject(getMembers(), writer);
       }
     };
   }
@@ -203,38 +203,38 @@ public class GroovyLang implements Lang {
     return new JsonArrayLiteralExpressionBuilder(this::renderJsonArray);
   }
 
-  private void renderJsonObject(Iterable<Member> members, Renderer renderer) {
+  private void renderJsonObject(Iterable<Member> members, CodeWriter writer) {
     Iterator<Member> iterator = members.iterator();
     if (iterator.hasNext()) {
-      renderer.append("[");
+      writer.append("[");
       while (iterator.hasNext()) {
         Member member = iterator.next();
-        renderer.append(member.name);
-        renderer.append(":");
+        writer.append(member.name);
+        writer.append(":");
         if (member instanceof Member.Single) {
-          ((Member.Single) member).value.render(renderer);
+          ((Member.Single) member).value.render(writer);
         } else {
-          renderJsonArray(((Member.Array) member).values, renderer);
+          renderJsonArray(((Member.Array) member).values, writer);
         }
         if (iterator.hasNext()) {
-          renderer.append(", ");
+          writer.append(", ");
         }
       }
-      renderer.append("]");
+      writer.append("]");
     } else {
-      renderer.append("[:]");
+      writer.append("[:]");
     }
   }
 
-  private void renderJsonArray(List<ExpressionBuilder> values, Renderer renderer) {
-    renderer.append('[');
+  private void renderJsonArray(List<ExpressionBuilder> values, CodeWriter writer) {
+    writer.append('[');
     for (int i = 0;i < values.size();i++) {
       if (i > 0) {
-        renderer.append(", ");
+        writer.append(", ");
       }
-      values.get(i).render(renderer);
+      values.get(i).render(writer);
     }
-    renderer.append(']');
+    writer.append(']');
   }
 
   @Override

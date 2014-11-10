@@ -10,115 +10,115 @@ import java.util.List;
  */
 public interface Lang {
 
-  default void renderIfThenElse(ExpressionBuilder condition, StatementBuilder thenBody, StatementBuilder elseBody, Renderer renderer) {
-    renderer.append("if ");
-    condition.render(renderer);
-    renderer.append(" {\n");
-    renderer.indent();
-    thenBody.render(renderer);
-    renderer.unindent();
-    renderer.append("}");
+  default void renderIfThenElse(ExpressionBuilder condition, StatementBuilder thenBody, StatementBuilder elseBody, CodeWriter writer) {
+    writer.append("if ");
+    condition.render(writer);
+    writer.append(" {\n");
+    writer.indent();
+    thenBody.render(writer);
+    writer.unindent();
+    writer.append("}");
     if (elseBody != null) {
-      renderer.append(" else {\n");
-      renderer.indent();
-      elseBody.render(renderer);
-      renderer.unindent();
-      renderer.append("}");
+      writer.append(" else {\n");
+      writer.indent();
+      elseBody.render(writer);
+      writer.unindent();
+      writer.append("}");
     }
   }
 
-  default void renderParenthesized(ExpressionBuilder expression, Renderer renderer) {
-    renderer.append('(');
-    expression.render(renderer);
-    renderer.append(')');
+  default void renderParenthesized(ExpressionBuilder expression, CodeWriter writer) {
+    writer.append('(');
+    expression.render(writer);
+    writer.append(')');
   }
 
-  default void renderEquals(ExpressionBuilder expression, ExpressionBuilder arg, Renderer renderer) {
-    expression.render(renderer);
-    renderer.append(" == ");
-    arg.render(renderer);
+  default void renderEquals(ExpressionBuilder expression, ExpressionBuilder arg, CodeWriter writer) {
+    expression.render(writer);
+    writer.append(" == ");
+    arg.render(writer);
   }
 
-  default void renderConditionalExpression(ExpressionBuilder condition, ExpressionBuilder trueExpression, ExpressionBuilder falseExpression, Renderer renderer) {
-    condition.render(renderer);
-    renderer.append(" ? ");
-    trueExpression.render(renderer);
-    renderer.append(" : ");
-    falseExpression.render(renderer);
+  default void renderConditionalExpression(ExpressionBuilder condition, ExpressionBuilder trueExpression, ExpressionBuilder falseExpression, CodeWriter writer) {
+    condition.render(writer);
+    writer.append(" ? ");
+    trueExpression.render(writer);
+    writer.append(" : ");
+    falseExpression.render(writer);
   }
 
-  default void renderAssign(ExpressionBuilder variable, ExpressionBuilder expression, Renderer renderer) {
-    variable.render(renderer);
-    renderer.append(" = ");
-    expression.render(renderer);
+  default void renderAssign(ExpressionBuilder variable, ExpressionBuilder expression, CodeWriter writer) {
+    variable.render(writer);
+    writer.append(" = ");
+    expression.render(writer);
   }
 
-  default void renderBlock(List<StatementBuilder> statements, Renderer renderer) {
+  default void renderBlock(List<StatementBuilder> statements, CodeWriter writer) {
     statements.forEach(statement -> {
-      statement.render(renderer);
-      renderer.append(";\n");
+      statement.render(writer);
+      writer.append(";\n");
     });
   }
 
-  default void renderMemberSelect(ExpressionBuilder expression, String identifier, Renderer renderer) {
-    expression.render(renderer);
-    renderer.append('.').append(identifier);
+  default void renderMemberSelect(ExpressionBuilder expression, String identifier, CodeWriter writer) {
+    expression.render(writer);
+    writer.append('.').append(identifier);
   }
 
-  default void renderMethodInvocation(ExpressionBuilder expression, List<ExpressionBuilder> arguments, Renderer renderer) {
-    expression.render(renderer);
-    renderer.append('(');
+  default void renderMethodInvocation(ExpressionBuilder expression, List<ExpressionBuilder> arguments, CodeWriter writer) {
+    expression.render(writer);
+    writer.append('(');
     for (int i = 0; i < arguments.size(); i++) {
       if (i > 0) {
-        renderer.append(", ");
+        writer.append(", ");
       }
-      arguments.get(i).render(renderer);
+      arguments.get(i).render(writer);
     }
-    renderer.append(')');
+    writer.append(')');
   }
 
-  default void renderBinary(ExpressionBuilder left, String op, ExpressionBuilder right, Renderer renderer) {
-    left.render(renderer);
-    renderer.append(" ").append(op).append(" ");
-    right.render(renderer);
+  default void renderBinary(ExpressionBuilder left, String op, ExpressionBuilder right, CodeWriter writer) {
+    left.render(writer);
+    writer.append(" ").append(op).append(" ");
+    right.render(writer);
   }
 
-  default void renderCharacters(String value, Renderer renderer) {
+  default void renderCharacters(String value, CodeWriter writer) {
     for (int i = 0;i < value.length();i++) {
       char c = value.charAt(i);
       switch (c) {
         case '\n':
-          renderer.append("\\n");
+          writer.append("\\n");
           break;
         case '"':
-          renderer.append("\\\"");
+          writer.append("\\\"");
           break;
         case '\\':
-          renderer.append("\\\\");
+          writer.append("\\\\");
           break;
         default:
-          renderer.append(c);
+          writer.append(c);
       }
     }
   }
 
-  default void renderStringLiteral(String value, Renderer renderer) {
-    renderer.append('"');
-    renderCharacters(value, renderer);
-    renderer.append('"');
+  default void renderStringLiteral(String value, CodeWriter writer) {
+    writer.append('"');
+    renderCharacters(value, writer);
+    writer.append('"');
   }
 
-  default void renderBooleanLiteral(String value, Renderer renderer) {
-    renderer.append(value);
+  default void renderBooleanLiteral(String value, CodeWriter writer) {
+    writer.append(value);
   }
 
-  default void renderIntegerLiteral(String value, Renderer renderer) {
-    renderer.append(value);
+  default void renderIntegerLiteral(String value, CodeWriter writer) {
+    writer.append(value);
   }
 
-  default void renderPostFixIncrement(ExpressionBuilder expression, Renderer renderer) {
-    expression.render(renderer);
-    renderer.append("++");
+  default void renderPostFixIncrement(ExpressionBuilder expression, CodeWriter writer) {
+    expression.render(writer);
+    writer.append("++");
   }
 
   //

@@ -9,12 +9,12 @@ import java.util.function.BiConsumer;
  */
 public class JsonObjectLiteralExpressionBuilder extends ExpressionBuilder {
 
-  private final BiConsumer<Iterable<Member>, Renderer> renderer;
+  private final BiConsumer<Iterable<Member>, CodeWriter> renderer;
   private final Lang lang;
   private String member;
   private LinkedHashMap<String, Member> entries = new LinkedHashMap<>();
 
-  public JsonObjectLiteralExpressionBuilder(Lang lang, BiConsumer<Iterable<Member>, Renderer> renderer) {
+  public JsonObjectLiteralExpressionBuilder(Lang lang, BiConsumer<Iterable<Member>, CodeWriter> renderer) {
     this.lang = lang;
     this.renderer = renderer;
   }
@@ -48,7 +48,7 @@ public class JsonObjectLiteralExpressionBuilder extends ExpressionBuilder {
   }
 
   @Override
-  public void render(Renderer renderer) {
-    this.renderer.accept(entries.values(), renderer);
+  public void render(CodeWriter writer) {
+    this.renderer.accept(entries.values(), writer);
   }
 }

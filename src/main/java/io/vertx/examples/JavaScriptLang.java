@@ -8,14 +8,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class JavaScriptLang implements Lang {
 
-  static class JavaScriptRenderer extends Renderer {
+  static class JavaScriptRenderer extends CodeWriter {
     LinkedHashSet<TypeInfo.Class> modules = new LinkedHashSet<>();
     JavaScriptRenderer(Lang lang) {
       super(lang);
@@ -23,17 +22,17 @@ public class JavaScriptLang implements Lang {
   }
 
   @Override
-  public void renderBlock(List<StatementBuilder> statements, Renderer renderer) {
-    if (renderer instanceof JavaScriptRenderer) {
-      Lang.super.renderBlock(statements, renderer);
+  public void renderBlock(List<StatementBuilder> statements, CodeWriter writer) {
+    if (writer instanceof JavaScriptRenderer) {
+      Lang.super.renderBlock(statements, writer);
     } else {
       JavaScriptRenderer langRenderer = new JavaScriptRenderer(this);
       Lang.super.renderBlock(statements, langRenderer);
       for (TypeInfo.Class module : langRenderer.modules) {
-        renderer.append("var ").append(module.getSimpleName()).append(" = require(\"").
+        writer.append("var ").append(module.getSimpleName()).append(" = require(\"").
             append(module.getModuleName()).append("-js/").append(Helper.convertCamelCaseToUnderscores(module.getSimpleName())).append("\");\n");
       }
-      renderer.append(langRenderer.getBuffer());
+      writer.append(langRenderer.getBuffer());
     }
   }
 
@@ -60,8 +59,8 @@ public class JavaScriptLang implements Lang {
   public ExpressionBuilder options(TypeInfo.Class optionType) {
     return new OptionsExpressionBuilder() {
       @Override
-      public void render(Renderer renderer) {
-        renderJsonObject(getMembers(), renderer);
+      public void render(CodeWriter writer) {
+        renderJsonObject(getMembers(), writer);
       }
     };
   }
@@ -76,32 +75,32 @@ public class JavaScriptLang implements Lang {
     return new JsonArrayLiteralExpressionBuilder(this::renderJsonArray);
   }
 
-  private void renderJsonObject(Iterable<Member> members, Renderer renderer) {
-    renderer.append("{");
+  private void renderJsonObject(Iterable<Member> members, CodeWriter writer) {
+    writer.append("{");
     for (Iterator<Member> iterator = members.iterator();iterator.hasNext();) {
       Member member = iterator.next();
-      renderer.append("\"").append(member.name).append("\" : ");
+      writer.append("\"").append(member.name).append("\" : ");
       if (member instanceof Member.Single) {
-        ((Member.Single) member).value.render(renderer);
+        ((Member.Single) member).value.render(writer);
       } else {
-        renderJsonArray(((Member.Array) member).values, renderer);
+        renderJsonArray(((Member.Array) member).values, writer);
       }
       if (iterator.hasNext()) {
-        renderer.append(", ");
+        writer.append(", ");
       }
     }
-    renderer.append("}");
+    writer.append("}");
   }
 
-  private void renderJsonArray(List<ExpressionBuilder> values, Renderer renderer) {
-    renderer.append('[');
+  private void renderJsonArray(List<ExpressionBuilder> values, CodeWriter writer) {
+    writer.append('[');
     for (int i = 0;i < values.size();i++) {
       if (i > 0) {
-        renderer.append(", ");
+        writer.append(", ");
       }
-      values.get(i).render(renderer);
+      values.get(i).render(writer);
     }
-    renderer.append(']');
+    writer.append(']');
   }
 
   @Override

@@ -3,14 +3,14 @@ package io.vertx.examples;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class Renderer implements Appendable {
+public class CodeWriter implements Appendable {
 
   private final Lang lang;
   private int indent = 0;
   private boolean first = true;
   private StringBuilder buffer = new StringBuilder();
 
-  public Renderer(Lang lang) {
+  public CodeWriter(Lang lang) {
     this.lang = lang;
   }
 
@@ -34,12 +34,12 @@ public class Renderer implements Appendable {
   }
 
   @Override
-  public Renderer append(CharSequence csq) {
+  public CodeWriter append(CharSequence csq) {
     return append(csq, 0, csq.length());
   }
 
   @Override
-  public Renderer append(CharSequence csq, int start, int end) {
+  public CodeWriter append(CharSequence csq, int start, int end) {
     while (start < end) {
       append(csq.charAt(start++));
     }
@@ -47,7 +47,7 @@ public class Renderer implements Appendable {
   }
 
   @Override
-  public Renderer append(char c) {
+  public CodeWriter append(char c) {
     if (c == '\n') {
       first = true;
     } else if (first) {

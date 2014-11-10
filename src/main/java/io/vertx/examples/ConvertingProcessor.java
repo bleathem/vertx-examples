@@ -390,9 +390,9 @@ public class ConvertingProcessor extends AbstractProcessor {
                 }
               };
               CodeBuilder src = visitor.scan(path, new VisitContext());
-              Renderer renderer = new Renderer(lang);
-              src.render(renderer);
-              result.put(rootElt.toString().replace('.', '/') + '.' + lang.getExtension(), renderer.getBuffer().toString());
+              CodeWriter writer = new CodeWriter(lang);
+              src.render(writer);
+              result.put(rootElt.toString().replace('.', '/') + '.' + lang.getExtension(), writer.getBuffer().toString());
             }
           }
         }

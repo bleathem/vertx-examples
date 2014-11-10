@@ -9,11 +9,11 @@ import java.util.function.BiConsumer;
  */
 public class JsonArrayLiteralExpressionBuilder extends ExpressionBuilder {
 
-  private final BiConsumer<List<ExpressionBuilder>, Renderer> renderer;
+  private final BiConsumer<List<ExpressionBuilder>, CodeWriter> renderer;
   private String member;
   private List<ExpressionBuilder> values = new ArrayList<>();
 
-  public JsonArrayLiteralExpressionBuilder(BiConsumer<List<ExpressionBuilder>, Renderer> renderer) {
+  public JsonArrayLiteralExpressionBuilder(BiConsumer<List<ExpressionBuilder>, CodeWriter> renderer) {
     this.renderer = renderer;
   }
 
@@ -36,7 +36,7 @@ public class JsonArrayLiteralExpressionBuilder extends ExpressionBuilder {
   }
 
   @Override
-  public void render(Renderer renderer) {
-    this.renderer.accept(values, renderer);
+  public void render(CodeWriter writer) {
+    this.renderer.accept(values, writer);
   }
 }

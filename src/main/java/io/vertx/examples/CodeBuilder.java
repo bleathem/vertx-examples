@@ -12,12 +12,12 @@ public class CodeBuilder {
   }
 
   public String render(Lang lang) {
-    Renderer renderer = new Renderer(lang);
-    render(renderer);
-    return renderer.getBuffer().toString();
+    CodeWriter writer = new CodeWriter(lang);
+    render(writer);
+    return writer.getBuffer().toString();
   }
 
-  public void render(Renderer renderer) {
+  public void render(CodeWriter writer) {
     UnsupportedOperationException e = new UnsupportedOperationException(getClass().getName() + " has not implemented this method");
     e.initCause(where);
     throw e;
