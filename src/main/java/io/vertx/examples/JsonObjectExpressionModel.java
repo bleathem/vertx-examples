@@ -2,19 +2,29 @@ package io.vertx.examples;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class JsonArrayLiteralExpressionModel extends ExpressionModel {
+public class JsonObjectExpressionModel extends ExpressionModel {
 
-  private final BiConsumer<List<ExpressionModel>, CodeWriter> renderer;
+  public static ExpressionModel CLASS_MODEL = ExpressionModel.forNew(args -> {
+    switch (args.size()) {
+      case 0:
+        return new JsonObjectExpressionModel();
+      default:
+        throw new UnsupportedOperationException();
+    }
+  });
+
   private String member;
-  private List<ExpressionModel> values = new ArrayList<>();
+  private List<Member> entries = new ArrayList<>();
 
-  public JsonArrayLiteralExpressionModel(BiConsumer<List<ExpressionModel>, CodeWriter> renderer) {
-    this.renderer = renderer;
+  public JsonObjectExpressionModel() {
+  }
+
+  public Iterable<Member> getMembers() {
+    return entries;
   }
 
   @Override
@@ -26,8 +36,8 @@ public class JsonArrayLiteralExpressionModel extends ExpressionModel {
   @Override
   public ExpressionModel onMethodInvocation(List<ExpressionModel> arguments) {
     switch (member) {
-      case "add":
-        values.add(arguments.get(0));
+      case "put":
+        entries.add(new Member.Single(arguments.get(0)).append(arguments.get(1)));
         break;
       default:
         throw new UnsupportedOperationException("Method " + member + " not yet implemented");
@@ -37,6 +47,6 @@ public class JsonArrayLiteralExpressionModel extends ExpressionModel {
 
   @Override
   public void render(CodeWriter writer) {
-    this.renderer.accept(values, writer);
+    writer.getLang().renderJsonObject(this, writer);
   }
 }

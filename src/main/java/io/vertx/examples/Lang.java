@@ -125,6 +125,10 @@ public interface Lang {
 
   String getExtension();
 
+  void renderJsonObject(JsonObjectExpressionModel jsonObject, CodeWriter writer);
+
+  void renderJsonArray(JsonArrayExpressionModel jsonArray, CodeWriter writer);
+
   //
 
   default ExpressionModel stringLiteral(String value) {
@@ -154,10 +158,6 @@ public interface Lang {
   //
 
   ExpressionModel options(TypeInfo.Class optionType);
-
-  ExpressionModel jsonObject();
-
-  ExpressionModel jsonArray();
 
   ExpressionModel console(ExpressionModel expression);
 

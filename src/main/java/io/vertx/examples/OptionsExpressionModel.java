@@ -21,13 +21,13 @@ public class OptionsExpressionModel extends ExpressionModel {
       String name = Character.toLowerCase(identifier.charAt(3)) + identifier.substring(4);
       member = members.get(name);
       if (member == null) {
-        members.put(name, member = new Member.Single(name));
+        members.put(name, member = new Member.Single(ExpressionModel.render(name)));
       }
     } else if (identifier.length() > 3 && identifier.startsWith("add")) {
       String name = Character.toLowerCase(identifier.charAt(3)) + identifier.substring(4) + "s"; // 's' for plural
       member = members.get(name);
       if (member == null) {
-        members.put(name, member = new Member.Array(name));
+        members.put(name, member = new Member.Array(ExpressionModel.render(name)));
       }
     } else {
       throw new UnsupportedOperationException("Not implemented");

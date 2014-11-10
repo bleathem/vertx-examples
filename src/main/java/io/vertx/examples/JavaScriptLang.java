@@ -60,26 +60,28 @@ public class JavaScriptLang implements Lang {
     return new OptionsExpressionModel() {
       @Override
       public void render(CodeWriter writer) {
-        renderJsonObject(getMembers(), writer);
+        renderJsonObject(getMembers(), writer, false);
       }
     };
   }
 
-  @Override
-  public ExpressionModel jsonObject() {
-    return new JsonObjectLiteralExpressionModel(this, this::renderJsonObject);
+  public void renderJsonObject(JsonObjectExpressionModel jsonObject, CodeWriter writer) {
+    renderJsonObject(jsonObject.getMembers(), writer, true);
   }
 
-  @Override
-  public ExpressionModel jsonArray() {
-    return new JsonArrayLiteralExpressionModel(this::renderJsonArray);
+  public void renderJsonArray(JsonArrayExpressionModel jsonArray, CodeWriter writer) {
+    renderJsonArray(jsonArray.getValues(), writer);
   }
 
-  private void renderJsonObject(Iterable<Member> members, CodeWriter writer) {
+  private void renderJsonObject(Iterable<Member> members, CodeWriter writer, boolean unquote) {
     writer.append("{");
     for (Iterator<Member> iterator = members.iterator();iterator.hasNext();) {
       Member member = iterator.next();
-      writer.append("\"").append(member.name).append("\" : ");
+      String name = member.name.render(writer.getLang());
+      if (unquote) {
+        name = io.vertx.examples.Helper.unwrapQuotedString(name);
+      }
+      writer.append("\"").append(name).append("\" : ");
       if (member instanceof Member.Single) {
         ((Member.Single) member).value.render(writer);
       } else {

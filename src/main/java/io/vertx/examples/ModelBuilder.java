@@ -189,23 +189,9 @@ public class ModelBuilder extends TreePathScanner<CodeModel, VisitContext> {
         if (type.getKind() == ClassKind.API) {
           return ExpressionModel.forMemberSelect((identifier) -> lang.staticFactory(type, identifier));
         } else if (type.getKind() == ClassKind.JSON_OBJECT) {
-          return ExpressionModel.forNew(args -> {
-            switch (args.size()) {
-              case 0:
-                return lang.jsonObject();
-              default:
-                throw new UnsupportedOperationException();
-            }
-          });
+          return JsonObjectExpressionModel.CLASS_MODEL;
         } else if (type.getKind() == ClassKind.JSON_ARRAY) {
-          return ExpressionModel.forNew(args -> {
-            switch (args.size()) {
-              case 0:
-                return lang.jsonArray();
-              default:
-                throw new UnsupportedOperationException();
-            }
-          });
+          return JsonArrayExpressionModel.CLASS_MODEL;
         } else if (type.getKind() == ClassKind.OPTIONS) {
           return ExpressionModel.forNew(args -> lang.options(type));
         } else {

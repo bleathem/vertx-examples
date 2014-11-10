@@ -8,11 +8,11 @@ import java.util.List;
 */
 public abstract class Member {
 
-  final String name;
+  final ExpressionModel name;
 
   protected abstract Member append(ExpressionModel builder);
 
-  public Member(String name) {
+  public Member(ExpressionModel name) {
     this.name = name;
   }
 
@@ -20,7 +20,7 @@ public abstract class Member {
 
     ExpressionModel value;
 
-    public Single(String name) {
+    public Single(ExpressionModel name) {
       super(name);
     }
 
@@ -35,7 +35,7 @@ public abstract class Member {
 
     List<ExpressionModel> values = new ArrayList<>();
 
-    public Array(String name) {
+    public Array(ExpressionModel name) {
       super(name);
     }
 
