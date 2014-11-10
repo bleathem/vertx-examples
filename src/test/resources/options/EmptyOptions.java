@@ -11,6 +11,6 @@ public class EmptyOptions extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    OptionsTest.options = HttpServerOptions.options();
+    OptionsTest.options = new HttpServerOptions();
   }
 }

@@ -11,7 +11,7 @@ public class Server extends AbstractVerticle {
   @Override
   public void start() throws Exception {
 
-    vertx.createHttpServer(HttpServerOptions.options().setPort(8282)).requestHandler(req -> {
+    vertx.createHttpServer(new HttpServerOptions().setPort(8282)).requestHandler(req -> {
 
       System.out.println("Got request " + req.uri());
 
@@ -19,7 +19,7 @@ public class Server extends AbstractVerticle {
         System.out.println(name + ": " + req.headers().get(name));
       }
 
-      req.dataHandler(data -> System.out.println("Got data " + data.toString("ISO-8859-1")));
+      req.handler(data -> System.out.println("Got data " + data.toString("ISO-8859-1")));
 
       req.endHandler(v -> {
         // Now send back a response

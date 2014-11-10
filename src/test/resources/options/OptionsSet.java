@@ -11,6 +11,6 @@ public class OptionsSet extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    OptionsTest.options = HttpServerOptions.options().setPort(8080).setHost("localhost");
+    OptionsTest.options = new HttpServerOptions().setPort(8080).setHost("localhost");
   }
 }

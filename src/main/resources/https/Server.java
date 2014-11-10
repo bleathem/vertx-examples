@@ -13,8 +13,8 @@ public class Server extends AbstractVerticle {
   @Override
   public void start() throws Exception {
     HttpServer server =
-        vertx.createHttpServer(HttpServerOptions.options().setHost("localhost").setPort(4443).setSsl(true).setKeyStoreOptions(
-            JKSOptions.options().setPath("server-keystore.jks").setPassword("wibble")
+        vertx.createHttpServer(new HttpServerOptions().setHost("localhost").setPort(4443).setSsl(true).setKeyStoreOptions(
+            new JKSOptions().setPath("server-keystore.jks").setPassword("wibble")
         ));
 
     server.requestHandler(req -> {

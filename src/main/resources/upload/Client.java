@@ -7,7 +7,7 @@ import io.vertx.core.file.FileSystem;
 import io.vertx.core.file.OpenOptions;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
-import io.vertx.core.http.RequestOptions;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.streams.Pump;
 
 /**
@@ -17,7 +17,7 @@ public class Client extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    HttpClientRequest req = vertx.createHttpClient(HttpClientOptions.options()).put(RequestOptions.options().setPort(8080).setRequestURI("/someurl"), resp -> {
+    HttpClientRequest req = vertx.createHttpClient(new HttpClientOptions()).request(HttpMethod.PUT, 8080, "localhost", "/someurl", resp -> {
       System.out.println("Response " + resp.statusCode());
     });
     String filename = "upload/upload.txt";
@@ -28,7 +28,7 @@ public class Client extends AbstractVerticle {
       System.out.println("props is " + props);
       long size = props.size();
       req.headers().set("content-length", String.valueOf(size));
-      fs.open(filename, OpenOptions.options(), ares2 -> {
+      fs.open(filename, new OpenOptions(), ares2 -> {
         AsyncFile file = ares2.result();
         Pump pump = Pump.pump(file, req);
         file.endHandler(v -> {

@@ -13,6 +13,6 @@ public class JsonObjectPutBoolean extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    JsonTest.o = new JsonObject().putBoolean("_true", true).putBoolean("_false", false);
+    JsonTest.o = new JsonObject().put("_true", true).put("_false", false);
   }
 }

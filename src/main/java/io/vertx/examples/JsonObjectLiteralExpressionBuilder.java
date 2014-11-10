@@ -28,11 +28,7 @@ public class JsonObjectLiteralExpressionBuilder extends ExpressionBuilder {
   @Override
   public ExpressionBuilder onMethodInvocation(List<ExpressionBuilder> arguments) {
     switch (member) {
-      case "putBoolean":
-      case "putString":
-      case "putNumber":
-      case "putObject":
-      case "putArray":
+      case "put":
         String name = unwrapQuotedString(arguments.get(0).render(lang));
         entries.put(name, new Member.Single(name).append(arguments.get(1)));
         break;

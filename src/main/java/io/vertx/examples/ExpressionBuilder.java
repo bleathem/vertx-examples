@@ -29,7 +29,7 @@ public class ExpressionBuilder extends CodeBuilder {
   }
 
   public ExpressionBuilder onNew(List<ExpressionBuilder> arguments) {
-    throw new UnsupportedOperationException("Not implemented");
+    throw new UnsupportedOperationException("Not implemented with arguments " + arguments);
   }
 
   public ExpressionBuilder onMethodInvocation(List<ExpressionBuilder> arguments) {

@@ -12,7 +12,7 @@ public class EchoServer extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    vertx.createNetServer(NetServerOptions.options().setPort(1234)).connectHandler(socket -> {
+    vertx.createNetServer(new NetServerOptions().setPort(1234)).connectHandler(socket -> {
       Pump.pump(socket, socket).start();
     }).listen();
   }

@@ -11,6 +11,6 @@ public class OptionsAdd extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    OptionsTest.options = HttpServerOptions.options().addWebsocketSubProtocol("foo").addWebsocketSubProtocol("bar");
+    OptionsTest.options = new HttpServerOptions().addEnabledCipherSuite("foo").addEnabledCipherSuite("bar");
   }
 }

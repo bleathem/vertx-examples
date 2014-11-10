@@ -3,7 +3,6 @@ package io.vertx.examples;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonElement;
 import io.vertx.core.json.JsonObject;
 import jdk.nashorn.internal.runtime.ScriptObject;
 
@@ -62,7 +61,7 @@ public abstract class ConversionTestBase {
     return results.get(path + "." + lang.getExtension());
   }
 
-  private JsonElement unwrapJsonElement(ScriptObject obj) {
+  private Object unwrapJsonElement(ScriptObject obj) {
     if (obj.isArray()) {
       return unwrapJsonArray(obj);
     } else {
@@ -77,7 +76,7 @@ public abstract class ConversionTestBase {
       if (value instanceof ScriptObject) {
         value = unwrapJsonElement((ScriptObject) value);
       }
-      unwrapped.putValue(key, value);
+      unwrapped.put(key, value);
     }
     return unwrapped;
   }
@@ -95,11 +94,25 @@ public abstract class ConversionTestBase {
     return unwrapped;
   }
 
-  public JsonObject unwrapJsonObject(Map<String, Object> obj) {
-    return new JsonObject(obj);
+  public JsonObject unwrapJsonObject(Map<String, ?> obj) {
+    JsonObject ret = new JsonObject();
+    obj.forEach((k,v) -> ret.put(k, unwrapJson(v)));
+    return ret;
   }
 
-  public JsonArray unwrapJsonArray(List<Object> obj) {
-    return new JsonArray(obj);
+  public JsonArray unwrapJsonArray(List<?> obj) {
+    JsonArray ret = new JsonArray();
+    obj.forEach(e -> ret.add(unwrapJson(e)));
+    return ret;
+  }
+
+  private Object unwrapJson(Object o) {
+    if (o instanceof Map) {
+      return unwrapJsonObject((Map<String, ?>) o);
+    } else if (o instanceof List) {
+      return unwrapJsonArray((List<?>) o);
+    } else {
+      return o;
+    }
   }
 }

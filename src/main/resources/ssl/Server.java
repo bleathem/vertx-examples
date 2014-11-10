@@ -14,8 +14,8 @@ public class Server extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    NetServer server = vertx.createNetServer(NetServerOptions.options().setPort(1234).setHost("localhost")
-        .setSsl(true).setKeyStoreOptions(JKSOptions.options().setPath("server-keystore.jks").setPassword("wibble")));
+    NetServer server = vertx.createNetServer(new NetServerOptions().setPort(1234).setHost("localhost")
+        .setSsl(true).setKeyStoreOptions(new JKSOptions().setPath("server-keystore.jks").setPassword("wibble")));
     server.connectHandler(sock -> Pump.pump(sock, sock).start()).listen((it) -> {
       if (it.failed()) {
         System.out.println("Cannot start server " + it.cause());

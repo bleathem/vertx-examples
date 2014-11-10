@@ -13,6 +13,6 @@ public class JsonArrayAddNumber extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    JsonTest.o = new JsonArray().addNumber(8080);
+    JsonTest.o = new JsonArray().add(8080);
   }
 }

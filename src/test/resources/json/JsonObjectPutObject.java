@@ -13,6 +13,6 @@ public class JsonObjectPutObject extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    JsonTest.o = new JsonObject().putObject("nested", new JsonObject().putString("foo", "bar"));
+    JsonTest.o = new JsonObject().put("nested", new JsonObject().put("foo", "bar"));
   }
 }

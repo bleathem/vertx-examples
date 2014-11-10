@@ -11,7 +11,7 @@ public class AsyncResultSucceeded extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    vertx.fileSystem().open(AsyncResultTest.path, OpenOptions.options(), res -> {
+    vertx.fileSystem().open(AsyncResultTest.path, new OpenOptions(), res -> {
       AsyncResultTest.setResult(res.result(), res.succeeded());
     });
   }

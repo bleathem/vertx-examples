@@ -26,11 +26,7 @@ public class JsonArrayLiteralExpressionBuilder extends ExpressionBuilder {
   @Override
   public ExpressionBuilder onMethodInvocation(List<ExpressionBuilder> arguments) {
     switch (member) {
-      case "addString":
-      case "addBoolean":
-      case "addNumber":
-      case "addArray":
-      case "addObject":
+      case "add":
         values.add(arguments.get(0));
         break;
       default:

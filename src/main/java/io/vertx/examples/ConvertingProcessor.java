@@ -203,7 +203,7 @@ public class ConvertingProcessor extends AbstractProcessor {
                   } else {
                     initializer = null;
                   }
-                  TypeInfo type = factory.create(Collections.emptyList(), decl.type);
+                  TypeInfo type = factory.create(decl.type);
                   return lang.variable(
                       type,
                       decl.name.toString(),
@@ -288,7 +288,7 @@ public class ConvertingProcessor extends AbstractProcessor {
                           ExpressionBuilder.forMemberSelect("println", () ->
                               ExpressionBuilder.forMethodInvocation(args -> lang.console(args.get(0)))));
                     } else {
-                      TypeInfo.Class type = (TypeInfo.Class) factory.create(Collections.emptyList(), ident.type);
+                      TypeInfo.Class type = (TypeInfo.Class) factory.create(ident.type);
                       if (type.getKind() == ClassKind.API) {
                         return ExpressionBuilder.forMemberSelect((identifier) -> lang.staticFactory(type, identifier));
                       } else if (type.getKind() == ClassKind.JSON_OBJECT) {
@@ -310,7 +310,7 @@ public class ConvertingProcessor extends AbstractProcessor {
                           }
                         });
                       } else if (type.getKind() == ClassKind.OPTIONS) {
-                        return ExpressionBuilder.forMemberSelect("options", () -> ExpressionBuilder.forMethodInvocation(args -> lang.options(type)));
+                        return ExpressionBuilder.forNew(args -> lang.options(type));
                       } else {
                         return lang.classExpression(type);
                       }
@@ -361,7 +361,7 @@ public class ConvertingProcessor extends AbstractProcessor {
                 public ExpressionBuilder visitLambdaExpression(LambdaExpressionTree node, VisitContext p) {
                   List<String> parameterNames = node.getParameters().stream().map(parameter -> parameter.getName().toString()).collect(Collectors.toList());
                   List<TypeInfo> parameterTypes = node.getParameters().stream().
-                      map(parameter -> factory.create(Collections.emptyList(), ((JCTree.JCVariableDecl) parameter).type)).
+                      map(parameter -> factory.create(((JCTree.JCVariableDecl) parameter).type)).
                       collect(Collectors.toList());
                   int size = parameterNames.size();
                   if (size > 0) {
@@ -371,7 +371,7 @@ public class ConvertingProcessor extends AbstractProcessor {
                       if (typeApply.clazz instanceof JCTree.JCFieldAccess) {
                         JCTree.JCFieldAccess clazz = (JCTree.JCFieldAccess) typeApply.clazz;
                         Symbol.ClassSymbol sym = (Symbol.ClassSymbol) clazz.sym;
-                        TypeInfo type = factory.create(Collections.emptyList(), sym.type);
+                        TypeInfo type = factory.create(sym.type);
                         if (type.getKind() == ClassKind.ASYNC_RESULT) {
                           ExpressionBuilder result = lang.asyncResult(last.name.toString());
                           CodeBuilder body = scan(node.getBody(), p.putAlias(last.sym, result));

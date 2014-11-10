@@ -14,6 +14,6 @@ public class JsonArrayAddObject extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    JsonTest.o = new JsonArray().addObject(new JsonObject().putString("foo", "foo_value"));
+    JsonTest.o = new JsonArray().add(new JsonObject().put("foo", "foo_value"));
   }
 }

@@ -15,7 +15,7 @@ public class BridgeServer extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    HttpServer server = vertx.createHttpServer(HttpServerOptions.options().setPort(8080));
+    HttpServer server = vertx.createHttpServer(new HttpServerOptions().setPort(8080));
 
     // Serve the static resources
     server.requestHandler(req -> {
@@ -26,8 +26,8 @@ public class BridgeServer extends AbstractVerticle {
     // At the moment we use the native SockJSServer
     SockJSServer sockJSServer = SockJSServer.sockJSServer(vertx, server);
     sockJSServer.bridge(
-        SockJSServerOptions.options().setPrefix("/eventbus"),
-        BridgeOptions.options().addInboundPermitted(new JsonObject()).addOutboundPermitted(new JsonObject()));
+        new SockJSServerOptions().setPrefix("/eventbus"),
+        new BridgeOptions().addInboundPermitted(new JsonObject()).addOutboundPermitted(new JsonObject()));
     server.listen();
   }
 }

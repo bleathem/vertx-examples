@@ -18,7 +18,7 @@ public class SockJSExample extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    HttpServer server = vertx.createHttpServer(HttpServerOptions.options().setPort(8080));
+    HttpServer server = vertx.createHttpServer(new HttpServerOptions().setPort(8080));
 
     // Serve the index page
     server.requestHandler(req -> {
@@ -28,8 +28,8 @@ public class SockJSExample extends AbstractVerticle {
     SockJSServer sockJSServer = SockJSServer.sockJSServer(vertx, server);
 
     // The handler for the SockJS app - we just echo data back
-    sockJSServer.installApp(SockJSServerOptions.options().setPrefix("/testapp"), sock -> {
-      sock.dataHandler(buff -> {
+    sockJSServer.installApp(new SockJSServerOptions().setPrefix("/testapp"), sock -> {
+      sock.handler(buff -> {
         sock.write(buff);
       });
     });

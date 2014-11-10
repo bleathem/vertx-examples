@@ -10,7 +10,7 @@ public class SimpleFormUploadServer extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    vertx.createHttpServer(HttpServerOptions.options().setPort(8080)).requestHandler(req -> {
+    vertx.createHttpServer(new HttpServerOptions().setPort(8080)).requestHandler(req -> {
       if (req.uri().equals("/")) {
         // Serve the index page
         req.response().sendFile("simpleformupload/index.html");

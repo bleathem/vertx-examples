@@ -12,7 +12,7 @@ public class Receiver extends AbstractVerticle {
   public void start() throws Exception {
     EventBus eb = vertx.eventBus();
 
-    eb.registerHandler("ping-address", message -> {
+    eb.consumer("ping-address").handler(message -> {
         System.out.println("Received message: " + message.body());
         // Now send back reply
         message.reply("pong!");

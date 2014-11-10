@@ -12,6 +12,6 @@ public class NestedOptions extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    OptionsTest.options = HttpServerOptions.options().setKeyStoreOptions(JKSOptions.options().setPath("/mystore.jks").setPassword("secret"));
+    OptionsTest.options = new HttpServerOptions().setKeyStoreOptions(new JKSOptions().setPath("/mystore.jks").setPassword("secret"));
   }
 }

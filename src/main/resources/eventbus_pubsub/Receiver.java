@@ -12,6 +12,6 @@ public class Receiver extends AbstractVerticle {
   public void start() throws Exception {
     EventBus eb = vertx.eventBus();
 
-    eb.registerHandler("news-feed", message -> System.out.println("Received news: " + message.body()));
+    eb.consumer("news-feed").handler(message -> System.out.println("Received news: " + message.body()));
   }
 }

@@ -11,11 +11,11 @@ public class EchoClient extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    vertx.createNetClient(NetClientOptions.options()).connect(1234, "localhost", asyncResult -> {
+    vertx.createNetClient(new NetClientOptions()).connect(1234, "localhost", asyncResult -> {
 
       if (asyncResult.succeeded()) {
         NetSocket socket = asyncResult.result();
-        socket.dataHandler(buffer -> {
+        socket.handler(buffer -> {
             System.out.println("Net client receiving: " + buffer.toString("UTF-8"));
         });
 

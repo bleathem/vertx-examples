@@ -10,7 +10,7 @@ public class SendFile extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    vertx.createHttpServer(HttpServerOptions.options().setPort(8080)).requestHandler(req -> {
+    vertx.createHttpServer(new HttpServerOptions().setPort(8080)).requestHandler(req -> {
       String filename = "sendfile/" + (req.uri().equals("/") ? "index.html" : "." + req.uri());
       System.out.println(filename);
       req.response().sendFile(filename);

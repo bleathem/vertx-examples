@@ -13,6 +13,6 @@ public class JsonObjectPutString extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    JsonTest.o = new JsonObject().putString("foo", "foo_value");
+    JsonTest.o = new JsonObject().put("foo", "foo_value");
   }
 }

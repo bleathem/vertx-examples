@@ -11,10 +11,10 @@ public class Client extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    vertx.createNetClient(NetClientOptions.options().setSsl(true).setTrustAll(true)).connect(1234, "localhost", asyncResult -> {
+    vertx.createNetClient(new NetClientOptions().setSsl(true).setTrustAll(true)).connect(1234, "localhost", asyncResult -> {
       if (asyncResult.succeeded()) {
         NetSocket sock = asyncResult.result();
-        sock.dataHandler( buff -> {
+        sock.handler( buff -> {
           System.out.println("client receiving " + buff.toString("UTF-8"));
         });
 

@@ -13,6 +13,6 @@ public class JsonArrayAddString extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    JsonTest.o = new JsonArray().addString("foo");
+    JsonTest.o = new JsonArray().add("foo");
   }
 }

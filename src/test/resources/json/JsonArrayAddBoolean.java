@@ -13,6 +13,6 @@ public class JsonArrayAddBoolean extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    JsonTest.o = new JsonArray().addBoolean(true).addBoolean(false);
+    JsonTest.o = new JsonArray().add(true).add(false);
   }
 }
