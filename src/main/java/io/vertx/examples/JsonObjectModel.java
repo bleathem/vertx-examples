@@ -1,6 +1,6 @@
 package io.vertx.examples;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -11,16 +11,16 @@ public class JsonObjectModel extends ExpressionModel {
   public static ExpressionModel CLASS_MODEL = ExpressionModel.forNew(args -> {
     switch (args.size()) {
       case 0:
-        return new JsonObjectModel();
+        return new JsonObjectModel(Collections.emptyList());
       default:
         throw new UnsupportedOperationException();
     }
   });
 
-  private String member;
-  private List<Member> entries = new ArrayList<>();
+  private final List<Member> entries;
 
-  public JsonObjectModel() {
+  private JsonObjectModel(List<Member> entries) {
+    this.entries = entries;
   }
 
   public Iterable<Member> getMembers() {
@@ -29,20 +29,17 @@ public class JsonObjectModel extends ExpressionModel {
 
   @Override
   public ExpressionModel onMemberSelect(String identifier) {
-    this.member = identifier;
-    return this;
-  }
-
-  @Override
-  public ExpressionModel onMethodInvocation(List<ExpressionModel> arguments) {
-    switch (member) {
-      case "put":
-        entries.add(new Member.Single(arguments.get(0)).append(arguments.get(1)));
-        break;
-      default:
-        throw new UnsupportedOperationException("Method " + member + " not yet implemented");
-    }
-    return this;
+    return new ExpressionModel() {
+      @Override
+      public ExpressionModel onMethodInvocation(List<ExpressionModel> arguments) {
+        switch (identifier) {
+          case "put":
+            return new JsonObjectModel(Helper.append(entries, new Member.Single(arguments.get(0)).append(arguments.get(1))));
+          default:
+            throw new UnsupportedOperationException("Method " + identifier + " not yet implemented");
+        }
+      }
+    };
   }
 
   @Override

@@ -1,6 +1,6 @@
 package io.vertx.examples;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -11,16 +11,16 @@ public class JsonArrayModel extends ExpressionModel {
   public static final ExpressionModel CLASS_MODEL = ExpressionModel.forNew(args -> {
     switch (args.size()) {
       case 0:
-        return new JsonArrayModel();
+        return new JsonArrayModel(Collections.emptyList());
       default:
         throw new UnsupportedOperationException();
     }
   });
 
-  private String member;
-  private List<ExpressionModel> values = new ArrayList<>();
+  private List<ExpressionModel> values;
 
-  public JsonArrayModel() {
+  public JsonArrayModel(List<ExpressionModel> values) {
+    this.values = values;
   }
 
   public List<ExpressionModel> getValues() {
@@ -29,20 +29,17 @@ public class JsonArrayModel extends ExpressionModel {
 
   @Override
   public ExpressionModel onMemberSelect(String identifier) {
-    this.member = identifier;
-    return this;
-  }
-
-  @Override
-  public ExpressionModel onMethodInvocation(List<ExpressionModel> arguments) {
-    switch (member) {
-      case "add":
-        values.add(arguments.get(0));
-        break;
-      default:
-        throw new UnsupportedOperationException("Method " + member + " not yet implemented");
-    }
-    return this;
+    return new ExpressionModel() {
+      @Override
+      public ExpressionModel onMethodInvocation(List<ExpressionModel> arguments) {
+        switch (identifier) {
+          case "add":
+            return new JsonArrayModel(Helper.append(values, arguments.get(0)));
+          default:
+            throw new UnsupportedOperationException("Method " + identifier + " not yet implemented");
+        }
+      }
+    };
   }
 
   @Override

@@ -1,5 +1,8 @@
 package io.vertx.examples;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -12,5 +15,11 @@ public class Helper {
     } else {
       throw new IllegalArgumentException("Illegal quoted string " + s);
     }
+  }
+
+  static <E> List<E> append(List<E> list, E last) {
+    ArrayList<E> copy = new ArrayList<>(list);
+    copy.add(last);
+    return copy;
   }
 }
