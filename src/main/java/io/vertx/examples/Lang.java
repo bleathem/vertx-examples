@@ -125,11 +125,11 @@ public interface Lang {
 
   String getExtension();
 
-  void renderJsonObject(JsonObjectExpressionModel jsonObject, CodeWriter writer);
+  void renderJsonObject(JsonObjectModel jsonObject, CodeWriter writer);
 
-  void renderJsonArray(JsonArrayExpressionModel jsonArray, CodeWriter writer);
+  void renderJsonArray(JsonArrayModel jsonArray, CodeWriter writer);
 
-  void renderOptions(OptionsExpressionModel options, CodeWriter writer);
+  void renderOptions(OptionsModel options, CodeWriter writer);
 
   //
 

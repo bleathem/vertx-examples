@@ -6,12 +6,12 @@ import java.util.List;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class JsonArrayExpressionModel extends ExpressionModel {
+public class JsonArrayModel extends ExpressionModel {
 
   public static final ExpressionModel CLASS_MODEL = ExpressionModel.forNew(args -> {
     switch (args.size()) {
       case 0:
-        return new JsonArrayExpressionModel();
+        return new JsonArrayModel();
       default:
         throw new UnsupportedOperationException();
     }
@@ -20,7 +20,7 @@ public class JsonArrayExpressionModel extends ExpressionModel {
   private String member;
   private List<ExpressionModel> values = new ArrayList<>();
 
-  public JsonArrayExpressionModel() {
+  public JsonArrayModel() {
   }
 
   public List<ExpressionModel> getValues() {

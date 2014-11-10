@@ -55,15 +55,15 @@ public class JavaScriptLang implements Lang {
     });
   }
 
-  public void renderOptions(OptionsExpressionModel options, CodeWriter writer) {
+  public void renderOptions(OptionsModel options, CodeWriter writer) {
     renderJsonObject(options.getMembers(), writer, false);
   }
 
-  public void renderJsonObject(JsonObjectExpressionModel jsonObject, CodeWriter writer) {
+  public void renderJsonObject(JsonObjectModel jsonObject, CodeWriter writer) {
     renderJsonObject(jsonObject.getMembers(), writer, true);
   }
 
-  public void renderJsonArray(JsonArrayExpressionModel jsonArray, CodeWriter writer) {
+  public void renderJsonArray(JsonArrayModel jsonArray, CodeWriter writer) {
     renderJsonArray(jsonArray.getValues(), writer);
   }
 

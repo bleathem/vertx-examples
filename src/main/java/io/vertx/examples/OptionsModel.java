@@ -9,23 +9,23 @@ import java.util.Map;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class OptionsExpressionModel extends ExpressionModel {
+public class OptionsModel extends ExpressionModel {
 
   public static ExpressionModel create(TypeInfo.Class type) {
-    return ExpressionModel.forNew(args -> new OptionsExpressionModel(type));
+    return ExpressionModel.forNew(args -> new OptionsModel(type));
   }
 
   private final TypeInfo.Class type;
-  private final OptionsExpressionModel parent;
+  private final OptionsModel parent;
   private final String name;
   private final ExpressionModel value;
   private final boolean plural;
 
-  private OptionsExpressionModel(TypeInfo.Class type) {
+  private OptionsModel(TypeInfo.Class type) {
     this(type, null, null, null, false);
   }
 
-  private OptionsExpressionModel(TypeInfo.Class type, OptionsExpressionModel parent, String name, ExpressionModel value, boolean plural) {
+  private OptionsModel(TypeInfo.Class type, OptionsModel parent, String name, ExpressionModel value, boolean plural) {
     this.parent = parent;
     this.name = name;
     this.value = value;
@@ -71,7 +71,7 @@ public class OptionsExpressionModel extends ExpressionModel {
       public ExpressionModel onMethodInvocation(List<ExpressionModel> arguments) {
         if (arguments.size() == 1) {
           ExpressionModel value = arguments.get(0);
-          return new OptionsExpressionModel(type, OptionsExpressionModel.this, name, value, plural);
+          return new OptionsModel(type, OptionsModel.this, name, value, plural);
         } else {
           throw new UnsupportedOperationException("not yet implemented");
         }
