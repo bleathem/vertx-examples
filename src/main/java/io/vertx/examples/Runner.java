@@ -216,12 +216,12 @@ public class Runner {
           deploy(verticles.subList(1, verticles.size()), nextDepl, resultHandler);
         } else {
           undeploy(previousDepl, done -> {
-            resultHandler.handle(Future.completedFuture(result.cause()));
+            resultHandler.handle(Future.failedFuture(result.cause()));
           });
         }
       });
     } else {
-      resultHandler.handle(Future.completedFuture(previousDepl));
+      resultHandler.handle(Future.succeededFuture(previousDepl));
     }
   }
 
